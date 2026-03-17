@@ -9,6 +9,7 @@ interface Profile {
   email: string;
   nombre: string;
   avatar_url: string;
+  origin_address?: string;
 }
 
 export function useAuth() {

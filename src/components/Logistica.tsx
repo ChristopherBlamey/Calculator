@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useEventStore } from "@/store/useEventStore";
-import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
+import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown, Save, Loader2 } from "lucide-react";
 import { useJsApiLoader, GoogleMap, Autocomplete, DirectionsRenderer } from "@react-google-maps/api";
 
 const LIBRARIES: ("places")[] = ["places"];
-const ORIGIN = process.env.NEXT_PUBLIC_ORIGIN_ADDRESS || "Buda 2961, Maipú, Santiago, Chile";
+const DEFAULT_ORIGIN = "Santiago, Chile";
 
 const mapContainerStyle = {
   width: "100%",
@@ -15,7 +17,7 @@ const mapContainerStyle = {
 };
 
 const center = {
-  lat: -33.5138, // Center loosely around Maipú or Santiago initially
+  lat: -33.5138,
   lng: -70.7523
 };
 
@@ -26,76 +28,36 @@ const mapOptions = {
     { elementType: "geometry", stylers: [{ color: "#242f3e" }] },
     { elementType: "labels.text.stroke", stylers: [{ color: "#242f3e" }] },
     { elementType: "labels.text.fill", stylers: [{ color: "#746855" }] },
-    {
-      featureType: "administrative.locality",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#d59563" }],
-    },
-    {
-      featureType: "poi",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#d59563" }],
-    },
-    {
-      featureType: "poi.park",
-      elementType: "geometry",
-      stylers: [{ color: "#263c3f" }],
-    },
-    {
-      featureType: "poi.park",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#6b9a76" }],
-    },
-    {
-      featureType: "road",
-      elementType: "geometry",
-      stylers: [{ color: "#38414e" }],
-    },
-    {
-      featureType: "road",
-      elementType: "geometry.stroke",
-      stylers: [{ color: "#212a37" }],
-    },
-    {
-      featureType: "road",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#9ca5b3" }],
-    },
-    {
-      featureType: "road.highway",
-      elementType: "geometry",
-      stylers: [{ color: "#746855" }],
-    },
-    {
-      featureType: "road.highway",
-      elementType: "geometry.stroke",
-      stylers: [{ color: "#1f2835" }],
-    },
-    {
-      featureType: "road.highway",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#f3d19c" }],
-    },
-    {
-      featureType: "water",
-      elementType: "geometry",
-      stylers: [{ color: "#17263c" }],
-    },
-    {
-      featureType: "water",
-      elementType: "labels.text.fill",
-      stylers: [{ color: "#515c6d" }],
-    },
-    {
-      featureType: "water",
-      elementType: "labels.text.stroke",
-      stylers: [{ color: "#17263c" }],
-    },
+    { featureType: "administrative.locality", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+    { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#d59563" }] },
+    { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#263c3f" }] },
+    { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#6b9a76" }] },
+    { featureType: "road", elementType: "geometry", stylers: [{ color: "#38414e" }] },
+    { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#212a37" }] },
+    { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+    { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#746855" }] },
+    { featureType: "road.highway", elementType: "geometry.stroke", stylers: [{ color: "#1f2835" }] },
+    { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#f3d19c" }] },
+    { featureType: "water", elementType: "geometry", stylers: [{ color: "#17263c" }] },
+    { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#515c6d" }] },
+    { featureType: "water", elementType: "labels.text.stroke", stylers: [{ color: "#17263c" }] },
   ],
 };
 
 export function Logistica() {
-  const originDisplay = ORIGIN.split(',')[0] + (ORIGIN.split(',')[1] ? ',' + ORIGIN.split(',')[1] : '');
+  const { user, profile } = useAuth();
+  const [originAddress, setOriginAddress] = useState("");
+  const [isEditingOrigin, setIsEditingOrigin] = useState(false);
+  const [isSavingOrigin, setIsSavingOrigin] = useState(false);
+  const [originSaved, setOriginSaved] = useState(false);
+  
+  useEffect(() => {
+    if (profile?.origin_address) {
+      setOriginAddress(profile.origin_address);
+    }
+  }, [profile]);
+
+  const originDisplay = originAddress ? originAddress.split(',')[0] + (originAddress.split(',')[1] ? ',' + originAddress.split(',')[1] : '') : "No configurado";
   
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -103,8 +65,8 @@ export function Logistica() {
   });
 
   const [destination, setDestination] = useState("");
-  const [rendimiento, setRendimiento] = useState(12); // km/L
-  const [precioLitro, setPrecioLitro] = useState(1150); // CLP
+  const [rendimiento, setRendimiento] = useState(12);
+  const [precioLitro, setPrecioLitro] = useState(1150);
   const [isSaved, setIsSaved] = useState(false);
 
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
@@ -113,8 +75,43 @@ export function Logistica() {
   const [error, setError] = useState<string | null>(null);
 
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const originAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   const setFuelCost = useEventStore((s) => s.setFuelCost);
+
+  const handleSaveOrigin = async () => {
+    if (!user || !originAddress.trim()) return;
+    
+    setIsSavingOrigin(true);
+    try {
+      const { error } = await supabase
+        .from("perfiles")
+        .update({ origin_address: originAddress.trim() })
+        .eq("id", user.id);
+
+      if (error) throw error;
+      setOriginSaved(true);
+      setIsEditingOrigin(false);
+      setTimeout(() => setOriginSaved(false), 3000);
+    } catch (err) {
+      console.error("Error saving origin:", err);
+    } finally {
+      setIsSavingOrigin(false);
+    }
+  };
+
+  const onLoadOriginAutocomplete = (autocomplete: google.maps.places.Autocomplete) => {
+    originAutocompleteRef.current = autocomplete;
+  };
+
+  const onOriginPlaceChanged = () => {
+    if (originAutocompleteRef.current) {
+      const place = originAutocompleteRef.current.getPlace();
+      if (place?.formatted_address) {
+        setOriginAddress(place.formatted_address);
+      }
+    }
+  };
 
   const onLoadAutocomplete = (autocomplete: google.maps.places.Autocomplete) => {
     autocompleteRef.current = autocomplete;
@@ -131,7 +128,6 @@ export function Logistica() {
       }
       if (newDest) {
         setDestination(newDest);
-        // Automatically calculate when a place is selected
         calculateDeliveryRoute(newDest, rendimiento, precioLitro);
       }
     }
@@ -139,6 +135,10 @@ export function Logistica() {
 
   const calculateDeliveryRoute = async (dest: string, rend: number, precio: number) => {
     if (!isLoaded || !dest.trim()) return;
+    if (!originAddress.trim()) {
+      setError("Debes configurar tu dirección de origen primero");
+      return;
+    }
 
     setError(null);
     setIsSaved(false);
@@ -147,7 +147,7 @@ export function Logistica() {
     try {
       const directionsService = new window.google.maps.DirectionsService();
       const results = await directionsService.route({
-        origin: ORIGIN,
+        origin: originAddress,
         destination: dest,
         travelMode: window.google.maps.TravelMode.DRIVING,
         avoidHighways: true,
@@ -209,7 +209,86 @@ export function Logistica() {
         </h2>
         <p className="text-white/60 text-sm">
           Calcula el costo del combustible para tu evento sin peajes ni autopistas.
-          <br/>Origen: <span className="text-cosmo-green">{originDisplay}</span>
+        </p>
+      </div>
+
+      {/* Configuración de Origen */}
+      <div className="glass-card p-4 border-wanda-pink/30">
+        <div className="flex items-center justify-between mb-3">
+          <label className="flex items-center gap-2 text-sm font-bold text-white/90">
+            <MapPin className="w-4 h-4 text-wanda-pink" />
+            Mi Dirección de Origen
+          </label>
+          {!isEditingOrigin && (
+            <button 
+              onClick={() => setIsEditingOrigin(true)}
+              className="text-xs text-wanda-pink hover:underline"
+            >
+              Cambiar
+            </button>
+          )}
+        </div>
+
+        {isEditingOrigin ? (
+          <div className="space-y-3">
+            {isLoaded ? (
+              <Autocomplete
+                onLoad={onLoadOriginAutocomplete}
+                onPlaceChanged={onOriginPlaceChanged}
+                restrictions={{ country: "cl" }}
+              >
+                <input
+                  type="text"
+                  placeholder="Ej: Buda 2961, Maipú, Santiago"
+                  value={originAddress}
+                  onChange={(e) => setOriginAddress(e.target.value)}
+                  className="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-wanda-pink/70 transition-all font-medium text-white placeholder:text-white/40"
+                />
+              </Autocomplete>
+            ) : (
+              <input
+                type="text"
+                disabled
+                placeholder="Cargando mapas..."
+                className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 opacity-50 cursor-not-allowed font-medium text-white"
+              />
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={handleSaveOrigin}
+                disabled={isSavingOrigin || !originAddress.trim()}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-wanda-pink text-white font-bold rounded-xl hover:bg-wanda-pink-light disabled:opacity-50"
+              >
+                {isSavingOrigin ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Guardar
+              </button>
+              <button
+                onClick={() => {
+                  setIsEditingOrigin(false);
+                  if (profile?.origin_address) setOriginAddress(profile.origin_address);
+                }}
+                className="px-4 py-2 bg-white/10 text-white rounded-xl hover:bg-white/20"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between bg-black/20 rounded-xl px-4 py-3">
+            <span className="text-white font-medium">{originDisplay}</span>
+            {originSaved && (
+              <span className="text-cosmo-green text-sm flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4" /> Guardado
+              </span>
+            )}
+          </div>
+        )}
+        <p className="text-xs text-white/40 mt-2">
+          Esta dirección se guardará para tus próximos cálculos de ruta.
         </p>
       </div>
 
@@ -278,7 +357,7 @@ export function Logistica() {
           </div>
         </div>
 
-        {isLoaded && (
+        {isLoaded && originAddress && (
           <div className="mt-4 rounded-xl overflow-hidden border border-white/10 shadow-lg relative">
             <GoogleMap
               mapContainerStyle={mapContainerStyle}
@@ -306,7 +385,7 @@ export function Logistica() {
 
         <button
           type="submit"
-          disabled={loadingRoute || !isLoaded}
+          disabled={loadingRoute || !isLoaded || !originAddress}
           className="w-full fab-glow green bg-cosmo-green text-black font-bold py-3.5 rounded-xl hover:bg-cosmo-green-light transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loadingRoute ? (

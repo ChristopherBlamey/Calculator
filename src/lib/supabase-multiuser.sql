@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.perfiles (
   email TEXT,
   nombre TEXT,
   avatar_url TEXT,
+  origin_address TEXT DEFAULT '',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
