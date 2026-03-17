@@ -1,0 +1,3 @@
+# Cloudflare Pages Redirects
+# Clean URLs - remove .html extensions
+*/index.html:*/:path*.html  /:path  301

@@ -9,7 +9,7 @@ interface UseDeliveryResult {
   clearResult: () => void;
 }
 
-const ORIGIN = "Buda 2961, Maipú, Santiago, Chile";
+const ORIGIN = process.env.NEXT_PUBLIC_ORIGIN_ADDRESS || "Buda 2961, Maipú, Santiago, Chile";
 
 export function useDelivery(): UseDeliveryResult {
   const [loading, setLoading] = useState(false);

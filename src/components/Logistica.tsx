@@ -6,7 +6,7 @@ import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown } from
 import { useJsApiLoader, GoogleMap, Autocomplete, DirectionsRenderer } from "@react-google-maps/api";
 
 const LIBRARIES: ("places")[] = ["places"];
-const ORIGIN = "Buda 2961, Maipú, Santiago, Chile";
+const ORIGIN = process.env.NEXT_PUBLIC_ORIGIN_ADDRESS || "Buda 2961, Maipú, Santiago, Chile";
 
 const mapContainerStyle = {
   width: "100%",
@@ -95,6 +95,8 @@ const mapOptions = {
 };
 
 export function Logistica() {
+  const originDisplay = ORIGIN.split(',')[0] + (ORIGIN.split(',')[1] ? ',' + ORIGIN.split(',')[1] : '');
+  
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries: LIBRARIES,
@@ -207,7 +209,7 @@ export function Logistica() {
         </h2>
         <p className="text-white/60 text-sm">
           Calcula el costo del combustible para tu evento sin peajes ni autopistas.
-          <br/>Origen: <span className="text-cosmo-green">Buda 2961, Maipú</span>
+          <br/>Origen: <span className="text-cosmo-green">{originDisplay}</span>
         </p>
       </div>
 
