@@ -42,6 +42,8 @@ function TabContent() {
   }
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
