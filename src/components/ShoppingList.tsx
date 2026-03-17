@@ -1,17 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { useEventStore } from "@/store/useEventStore";
 import { calculateTotals } from "@/lib/calculator";
 import { generateShoppingListText, generateCSV, downloadFile, downloadPDF } from "@/lib/export";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 
 export function ShoppingList() {
   const selections = useCalculatorStore((s) => s.selections);
   const overrides = useCalculatorStore((s) => s.recipeOverrides);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
   const eventName = useEventStore((s) => s.eventName);
+  const [telefono, setTelefono] = useState("");
 
   const totals = useMemo(
     () => calculateTotals(selections, overrides),
@@ -52,7 +53,8 @@ export function ShoppingList() {
     downloadPDF(totals);
   };
 
-  const handleWhatsApp = (phone: string) => {
+  const handleWhatsApp = () => {
+    if (!telefono) return;
     const text = generateShoppingListText(totals);
     let message = `*Blamey ERP - Lista de Compras* 📋\n`;
     if (eventName) {
@@ -61,8 +63,10 @@ export function ShoppingList() {
       message += `\n`;
     }
     message += text;
+    message += `\n\n_Enviado desde Blamey ERP_`;
+    const telefonoLimpio = telefono.replace(/\D/g, "");
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${phone}?text=${encoded}`, "_blank");
+    window.open(`https://wa.me/${telefonoLimpio}?text=${encoded}`, "_blank");
   };
 
   return (
@@ -125,18 +129,27 @@ export function ShoppingList() {
         </button>
       </div>
 
-      <div className="pt-2 border-t border-white/5 flex flex-wrap gap-2">
+      <div className="pt-2 border-t border-white/5 space-y-3">
+        <div>
+          <label className="flex items-center gap-2 text-sm font-bold mb-2 text-white/70">
+            <Phone className="w-4 h-4" />
+            WhatsApp
+          </label>
+          <input
+            type="tel"
+            placeholder="+56 9 1234 5678"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            className="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500/70 transition-all font-medium text-white placeholder:text-white/40"
+          />
+        </div>
         <button
-          onClick={() => handleWhatsApp('56944979866')}
-          className="flex w-full md:w-auto items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-bold text-black shadow-lg shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-95"
+          onClick={handleWhatsApp}
+          disabled={!telefono}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-bold text-black shadow-lg shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <MessageCircle className="w-5 h-5" /> Enviar a Chris (+56 9 4497 9866)
-        </button>
-        <button
-          onClick={() => handleWhatsApp('56954691936')}
-          className="flex w-full md:w-auto items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-bold text-black shadow-lg shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-95"
-        >
-          <MessageCircle className="w-5 h-5" /> Enviar a Fer (+56 9 5469 1936)
+          <MessageCircle className="w-5 h-5" />
+          Enviar lista por WhatsApp
         </button>
       </div>
     </div>
