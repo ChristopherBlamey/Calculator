@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   ChevronLeft,
-  Package
+  Package,
+  Shield
 } from "lucide-react";
 
 const TABS = [
@@ -27,6 +28,7 @@ const TABS = [
   { id: "costos", label: "Finanzas", shortLabel: "Fin", icon: DollarSign },
   { id: "recetas", label: "Recetas", shortLabel: "Rec", icon: Settings2 },
   { id: "productos_admin", label: "Admin Prod.", shortLabel: "Adm", icon: Package },
+  { id: "admin", label: "Admin", shortLabel: "Sys", icon: Shield },
 ];
 
 export function Sidebar() {

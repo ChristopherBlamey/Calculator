@@ -19,37 +19,54 @@
 :root {
   /* Global Theme Variables - LIGHT MODE */
   --background: #f8f9fa;
-  --foreground: #111827;
+  --foreground: #1a1a2e;
   
   /* Cosmo & Wanda palette */
   --cosmo: #00C853;
+  --cosmo-light: #69F0AE;
   --wanda: #FF69B4;
   --wanda-pink: #E91E8C;
+  --wanda-light: #FF85C1;
   
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.1);
-  --glass-bg-solid: rgba(255, 255, 255, 0.9);
+  /* Glass - Light mode */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(0, 0, 0, 0.15);
+  --glass-bg-solid: rgba(255, 255, 255, 0.98);
   
   --bg-gradient-1: #e9ecef;
   --bg-gradient-2: #f8f9fa;
   --bg-gradient-3: #e0e4e8;
+  
+  /* Text colors - Light mode */
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a5a;
+  --text-muted: #6b7280;
 }
 
 .dark {
   /* Global Theme Variables - DARK MODE */
-  --background: #0f0f0f;
-  --foreground: #f8f9fa;
+  --background: #0a0a0f;
+  --foreground: #ffffff;
   
   --cosmo: #7FFF00; /* Neon Green */
+  --cosmo-light: #B2FF59;
   --wanda: #FF69B4; /* Hot Pink */
+  --wanda-pink: #E91E8C;
+  --wanda-light: #FF85C1;
   
-  --glass-bg: rgba(30, 30, 30, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-bg-solid: rgba(20, 20, 20, 0.9);
+  /* Glass - REFORZADO para mejor legibilidad */
+  --glass-bg: rgba(15, 15, 25, 0.92);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-bg-solid: rgba(15, 15, 25, 0.98);
   
-  --bg-gradient-1: #0f0f0f;
-  --bg-gradient-2: #16111a;
-  --bg-gradient-3: #0f1512;
+  --bg-gradient-1: #0a0a0f;
+  --bg-gradient-2: #12121a;
+  --bg-gradient-3: #0a0f15;
+  
+  /* Text colors - MEJOR CONTRASTE */
+  --text-primary: #ffffff;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
 }
 
 @layer base {
@@ -71,6 +88,7 @@
   transition: background 0.5s ease;
 }
 
+/* Reducido al 8% - menos distracting */
 .cw-bg::before {
   content: '';
   position: fixed;
@@ -79,7 +97,7 @@
   width: 600px;
   height: 600px;
   background: radial-gradient(circle, var(--wanda) 0%, transparent 60%);
-  opacity: 0.15;
+  opacity: 0.08;
   border-radius: 50%;
   pointer-events: none;
   animation: floatOrb 12s ease-in-out infinite;
@@ -94,7 +112,7 @@
   width: 600px;
   height: 600px;
   background: radial-gradient(circle, var(--cosmo) 0%, transparent 60%);
-  opacity: 0.12;
+  opacity: 0.08;
   border-radius: 50%;
   pointer-events: none;
   animation: floatOrb 15s ease-in-out infinite reverse;
@@ -106,11 +124,11 @@
   50% { transform: translate(30px, -40px) scale(1.1); }
 }
 
-/* ===== Glass Card ===== */
+/* ===== Glass Card - MEJORADO ===== */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   transition: all 0.3s ease;
@@ -118,13 +136,153 @@
 
 .glass-card:hover {
   background: var(--glass-bg-solid);
-  border-color: rgba(127, 255, 0, 0.3); /* Slight cosmo hover tint */
+  border-color: rgba(127, 255, 0, 0.25);
+}
+
+/* ===== Enhanced visibility utilities ===== */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+
+/* ===== Inputs - MEJOR CONTRASTE ===== */
+input, select, textarea {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--wanda-pink) !important;
+  box-shadow: 0 0 0 2px rgba(233, 30, 140, 0.2) !important;
+}
+
+/* Select dropdown options */
+select option {
+  background: #1a1a2e !important;
+  color: #ffffff !important;
+}
+
+/* ===== Botones - REDISEÑO ===== */
+
+/* Botón Primario (Wanda) */
+.btn-primary,
+.bg-wanda-pink,
+.bg-wanda {
+  background: var(--wanda-pink) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+.btn-primary:hover,
+.bg-wanda-pink:hover,
+.bg-wanda:hover {
+  background: var(--wanda) !important;
+  box-shadow: 0 0 20px rgba(255, 105, 180, 0.4) !important;
+}
+
+/* Botón Secundario (Cosmo) - texto oscuro para contraste */
+.btn-secondary,
+.bg-cosmo,
+.bg-cosmo-green {
+  background: var(--cosmo) !important;
+  color: #052e16 !important; /* Verde muy oscuro */
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+.btn-secondary:hover,
+.bg-cosmo:hover,
+.bg-cosmo-green:hover {
+  background: var(--cosmo-light) !important;
+  color: #000000 !important;
+  box-shadow: 0 0 20px rgba(127, 255, 0, 0.4) !important;
+}
+
+/* Botón outline */
+.btn-outline {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #ffffff !important;
+}
+
+/* ===== Alertas y Popups ===== */
+
+/* Alert Success */
+.alert-success {
+  background: rgba(127, 255, 0, 0.15) !important;
+  border: 2px solid var(--cosmo) !important;
+  color: #ffffff !important;
+}
+
+/* Alert Error */
+.alert-error {
+  background: rgba(255, 105, 180, 0.15) !important;
+  border: 2px solid var(--wanda-pink) !important;
+  color: #ffffff !important;
+}
+
+/* Alert Warning */
+.alert-warning {
+  background: rgba(251, 191, 36, 0.15) !important;
+  border: 2px solid #fbbf24 !important;
+  color: #ffffff !important;
+}
+
+/* Alert Info */
+.alert-info {
+  background: rgba(59, 130, 246, 0.15) !important;
+  border: 2px solid #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* ===== Modal / Popup ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 50;
+}
+
+.modal-content {
+  background: var(--glass-bg-solid) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border) !important;
+  z-index: 51;
+}
+
+/* ===== Better card backgrounds ===== */
+.card-solid {
+  background: rgba(15, 15, 25, 0.95) !important;
+  border: 1px solid var(--glass-border);
+}
+
+/* ===== Section backgrounds for landing ===== */
+.section-dark {
+  background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%);
+}
+
+.section-gradient {
+  background: linear-gradient(135deg, rgba(233, 30, 140, 0.1) 0%, rgba(127, 255, 0, 0.05) 100%);
 }
 
 .glass-card-solid {
   background: var(--glass-bg-solid);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--glass-border);
   border-radius: 20px;
 }
@@ -202,17 +360,17 @@
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(127, 255, 0, 0.5); /* Cosmo hover */
+  background: rgba(127, 255, 0, 0.5);
 }
 
 /* ===== Sparkle animation ===== */
@@ -227,8 +385,17 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .animate-slide-up {
   animation: slideUp 0.4s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
 /* ===== Number input no arrows ===== */
@@ -239,4 +406,47 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+/* ===== Badge / Tag improvements ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-cosmo {
+  background: rgba(127, 255, 0, 0.2);
+  color: var(--cosmo);
+  border: 1px solid var(--cosmo);
+}
+
+.badge-wanda {
+  background: rgba(255, 105, 180, 0.2);
+  color: var(--wanda);
+  border: 1px solid var(--wanda);
+}
+
+/* ===== Table improvements ===== */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  background: rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+td {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.05) !important;
 }

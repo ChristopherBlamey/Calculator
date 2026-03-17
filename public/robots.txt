@@ -1,0 +1,48 @@
+# Robots.txt para Smartap
+# https://www.smartap.cl
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /erp
+Disallow: *?_=*
+
+# Sitemap
+Sitemap: https://www.smartap.cl/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /erp
+
+# IA Bots
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /api/
+Disallow: /erp
+
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /erp
+
+User-agent: Claude-Web
+Allow: /
+Disallow: /api/
+Disallow: /erp
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /api/
+Disallow: /erp
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+# Sitemap para IAs
+User-agent: *
+Sitemap: https://www.smartap.cl/sitemap.xml
