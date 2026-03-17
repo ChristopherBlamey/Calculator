@@ -12,6 +12,8 @@ import { EventoActual } from "@/components/EventoActual";
 import { ProductManager } from "@/components/ProductManager";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { useEffect, useState } from "react";
+import { downloadManual } from "@/lib/manual";
+import { FileText, Download } from "lucide-react";
 
 function TabContent() {
   const activeTab = useCalculatorStore((s) => s.activeTab);
@@ -65,10 +67,20 @@ export default function Home() {
         <div className="mx-auto max-w-4xl px-4 py-8 relative z-10 min-h-screen">
           <TabContent />
         </div>
-        <footer className="py-8 text-center relative z-10 border-t border-white/5 bg-black/20 mt-12 mb-20 md:mb-0">
-          <p className="text-xs text-white/40 font-medium tracking-wide">
-            BLAMEY ERP © {new Date().getFullYear()} — V2.0
-          </p>
+        <footer className="py-4 text-center relative z-10 border-t border-white/5 bg-black/20 mt-12 mb-20 md:mb-0">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-6">
+            <p className="text-xs text-white/40 font-medium tracking-wide">
+              BLAMEY ERP © {new Date().getFullYear()} — V1.3
+            </p>
+            <button 
+              onClick={() => downloadManual()}
+              className="flex items-center gap-1.5 text-xs text-white/40 hover:text-wanda-pink transition-colors"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Manual de Usuario</span>
+              <Download className="w-3 h-3" />
+            </button>
+          </div>
         </footer>
       </main>
     </div>
