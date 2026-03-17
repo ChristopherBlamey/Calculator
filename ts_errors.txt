@@ -1,0 +1,7 @@
+src/store/useEventStore.ts(93,60): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: never, options?: { count?: "exact" | "planned" | "estimated" | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "eventos", never, "POST">', gave the following error.
+    Argument of type 'any[]' is not assignable to parameter of type 'never'.
+  Overload 2 of 2, '(values: never[], options?: { count?: "exact" | "planned" | "estimated" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<{ PostgrestVersion: "12"; }, never, never, null, "eventos", never, "POST">', gave the following error.
+    Type 'any' is not assignable to type 'never'.
+src/store/useInventoryStore.ts(44,29): error TS2339: Property 'id' does not exist on type 'never'.
+src/store/useInventoryStore.ts(44,40): error TS2339: Property 'stock' does not exist on type 'never'.

@@ -1,78 +1,88 @@
 "use client";
 
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { 
+  Calculator, 
+  ListChecks, 
+  ShoppingCart, 
+  Settings2,
+  DollarSign,
+  BarChart3,
+  CarFront,
+  CalendarCheck
+} from "lucide-react";
 
 const TABS = [
-  { key: "productos", label: "Productos", emoji: "🌭" },
-  { key: "resultados", label: "Resultados", emoji: "📋" },
-  { key: "lista", label: "Lista", emoji: "🛒" },
-  { key: "recetas", label: "Recetas", emoji: "📝" },
-  { key: "costos", label: "Costos", emoji: "💰" },
+  { id: "dashboard", label: "Dashboard", shortLabel: "Dash", icon: BarChart3 },
+  { id: "logistica", label: "Logística", shortLabel: "Rut", icon: CarFront },
+  { id: "evento", label: "Evento", shortLabel: "Evt", icon: CalendarCheck },
+  { id: "productos", label: "Productos", shortLabel: "Prod", icon: Calculator },
+  { id: "resultados", label: "Resultados", shortLabel: "Res", icon: ListChecks },
+  { id: "lista", label: "Lista", shortLabel: "Com", icon: ShoppingCart },
+  { id: "costos", label: "Finanzas", shortLabel: "Fin", icon: DollarSign },
+  { id: "recetas", label: "Recetas", shortLabel: "Rec", icon: Settings2 },
 ];
 
 export function Header() {
   const activeTab = useCalculatorStore((s) => s.activeTab);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
-  const totalItems = useCalculatorStore((s) =>
-    s.selections.reduce((sum, sel) => sum + sel.quantity, 0)
-  );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0F0F1A]/80 backdrop-blur-2xl">
-      {/* Title bar */}
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E91E8C] to-[#FF6EB9] text-xl shadow-lg shadow-[#E91E8C]/25">
-            🌭
-            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-[#00C853] border-2 border-[#0F0F1A]" />
+    <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-black/40 border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+      <div className="mx-auto max-w-5xl px-4 pb-2">
+        {/* Deskop/Mobile header */}
+        <div className="flex flex-col md:flex-row h-auto md:h-20 items-center justify-between py-4 gap-4 md:gap-0">
+          <div className="flex items-center gap-3 w-full md:w-auto justify-center md:justify-start">
+            <div className="bg-wanda-pink text-white p-2.5 rounded-xl fab-glow transform rotate-12 hover:rotate-0 transition-transform cursor-pointer shadow-lg relative overflow-hidden shrink-0 mt-1">
+              <span className="text-xl font-bold font-mono tracking-tighter leading-none block">BL</span>
+              <div className="absolute inset-0 bg-white/20 blur-sm pointer-events-none w-full h-full animate-[spin_4s_linear_infinite]" />
+            </div>
+            
+            <div>
+              <h1 className="text-lg md:text-xl font-bold tracking-tight">
+                BLAMEY <span className="gradient-text-green bg-clip-text text-transparent">ERP</span>
+              </h1>
+            </div>
           </div>
-          <div>
-            <h1 className="text-base font-bold text-white leading-tight tracking-tight">
-              Carrito Chileno
-            </h1>
-            <p className="text-[11px] text-white/40 font-medium">
-              Calculadora de Ingredientes ✨
-            </p>
-          </div>
+          
+          <nav className="flex space-x-2 overflow-x-auto scrollbar-hide py-2 w-full md:w-auto -mx-4 px-4 md:mx-0 md:px-0">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              
+              // Give priority colors to our 3 new main ERP modules
+              let colorClass = "";
+              if (isActive) {
+                if (tab.id === 'dashboard' || tab.id === 'logistica' || tab.id === 'evento') {
+                  colorClass = "bg-[var(--cosmo)] text-black font-bold border-transparent";
+                } else {
+                  colorClass = "bg-[var(--wanda)] text-white font-bold border-transparent";
+                }
+              } else {
+                colorClass = "bg-[var(--glass-bg)] border-[var(--glass-border)] hover:bg-[var(--glass-bg-solid)] text-foreground";
+              }
+              
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    shrink-0 flex items-center justify-center gap-2 
+                    px-4 py-2 text-sm rounded-full transition-all duration-300
+                    border ${colorClass}
+                  `}
+                >
+                  <Icon className={`w-4 h-4 ${isActive && ['dashboard', 'logistica', 'evento'].includes(tab.id) ? 'animate-pulse' : ''}`} />
+                  <span className="hidden md:inline">{tab.label}</span>
+                  <span className="inline md:hidden">{tab.shortLabel}</span>
+                </button>
+              );
+            })}
+            {/* Spacer for mobile scroll cutoff fix */}
+            <div className="md:hidden shrink-0 w-2"></div>
+          </nav>
         </div>
-        {totalItems > 0 && (
-          <div className="flex items-center gap-1.5 rounded-full bg-[#00C853]/15 border border-[#00C853]/20 px-3 py-1.5">
-            <div className="h-2 w-2 rounded-full bg-[#00C853] animate-pulse" />
-            <span className="text-xs font-bold text-[#69F0AE]">
-              {totalItems} item{totalItems !== 1 ? "s" : ""}
-            </span>
-          </div>
-        )}
       </div>
-
-      {/* Tab bar */}
-      <nav className="mx-auto max-w-3xl px-4">
-        <div className="flex gap-0.5 overflow-x-auto pb-0 scrollbar-hide">
-          {TABS.map((tab) => {
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`
-                  relative flex items-center gap-1.5 whitespace-nowrap px-4 py-2.5 text-xs font-semibold transition-all duration-200
-                  ${
-                    isActive
-                      ? "text-[#FF6EB9]"
-                      : "text-white/40 hover:text-white/70"
-                  }
-                `}
-              >
-                <span className="text-sm">{tab.emoji}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
-                {isActive && (
-                  <div className="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-gradient-to-r from-[#E91E8C] to-[#FF6EB9]" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
     </header>
   );
 }

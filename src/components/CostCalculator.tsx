@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { useIngredientPrices } from "@/hooks/useIngredientPrices";
 import { INGREDIENTS } from "@/data/recipes";
 import { calculateTotals, calculateCosts } from "@/lib/calculator";
 
@@ -11,6 +12,9 @@ export function CostCalculator() {
   const prices = useCalculatorStore((s) => s.prices);
   const setPrice = useCalculatorStore((s) => s.setPrice);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
+
+  // Cargar precios desde Supabase
+  useIngredientPrices();
 
   const totals = useMemo(
     () => calculateTotals(selections, overrides),

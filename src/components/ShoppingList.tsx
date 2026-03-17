@@ -2,13 +2,16 @@
 
 import { useMemo } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { useEventStore } from "@/store/useEventStore";
 import { calculateTotals } from "@/lib/calculator";
 import { generateShoppingListText, generateCSV, downloadFile, downloadPDF } from "@/lib/export";
+import { MessageCircle } from "lucide-react";
 
 export function ShoppingList() {
   const selections = useCalculatorStore((s) => s.selections);
   const overrides = useCalculatorStore((s) => s.recipeOverrides);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
+  const eventName = useEventStore((s) => s.eventName);
 
   const totals = useMemo(
     () => calculateTotals(selections, overrides),
@@ -27,7 +30,7 @@ export function ShoppingList() {
         </p>
         <button
           onClick={() => setActiveTab("productos")}
-          className="mt-6 rounded-xl bg-gradient-to-r from-[#E91E8C] to-[#FF6EB9] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#E91E8C]/25 transition-all hover:scale-105 active:scale-95"
+          className="mt-6 rounded-xl bg-linear-to-r from-[#E91E8C] to-[#FF6EB9] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#E91E8C]/25 transition-all hover:scale-105 active:scale-95"
         >
           Seleccionar Productos →
         </button>
@@ -47,6 +50,19 @@ export function ShoppingList() {
 
   const handleDownloadPDF = () => {
     downloadPDF(totals);
+  };
+
+  const handleWhatsApp = (phone: string) => {
+    const text = generateShoppingListText(totals);
+    let message = `*Blamey ERP - Lista de Compras* 📋\n`;
+    if (eventName) {
+      message += `📅 *Evento:* ${eventName}\n\n`;
+    } else {
+      message += `\n`;
+    }
+    message += text;
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/${phone}?text=${encoded}`, "_blank");
   };
 
   return (
@@ -103,9 +119,24 @@ export function ShoppingList() {
         </button>
         <button
           onClick={handleDownloadPDF}
-          className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#E91E8C] to-[#FF6EB9] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#E91E8C]/20 transition-all hover:scale-105 active:scale-95"
+          className="flex items-center gap-1.5 rounded-xl bg-linear-to-r from-[#E91E8C] to-[#FF6EB9] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#E91E8C]/20 transition-all hover:scale-105 active:scale-95"
         >
-          📄 Descargar PDF
+          📄 PDF
+        </button>
+      </div>
+
+      <div className="pt-2 border-t border-white/5 flex flex-wrap gap-2">
+        <button
+          onClick={() => handleWhatsApp('56944979866')}
+          className="flex w-full md:w-auto items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-bold text-black shadow-lg shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-95"
+        >
+          <MessageCircle className="w-5 h-5" /> Enviar a Chris (+56 9 4497 9866)
+        </button>
+        <button
+          onClick={() => handleWhatsApp('56954691936')}
+          className="flex w-full md:w-auto items-center justify-center gap-1.5 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-bold text-black shadow-lg shadow-[#25D366]/20 transition-all hover:scale-[1.02] active:scale-95"
+        >
+          <MessageCircle className="w-5 h-5" /> Enviar a Fer (+56 9 5469 1936)
         </button>
       </div>
     </div>

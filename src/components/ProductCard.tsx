@@ -38,14 +38,14 @@ export function ProductCard({
         group relative rounded-2xl p-4 transition-all duration-300 cursor-default
         ${
           isActive
-            ? "bg-gradient-to-br from-[#E91E8C]/10 to-[#00C853]/10 border border-[#E91E8C]/30 shadow-lg shadow-[#E91E8C]/10 scale-[1.02]"
+            ? "bg-linear-to-br from-[#E91E8C]/10 to-[#00C853]/10 border border-[#E91E8C]/30 shadow-lg shadow-[#E91E8C]/10 scale-[1.02]"
             : "glass-card hover:border-white/10 hover:bg-white/5"
         }
       `}
     >
       {/* Active quantity badge */}
       {isActive && (
-        <div className="absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#E91E8C] to-[#FF6EB9] text-xs font-bold text-white shadow-lg shadow-[#E91E8C]/30 animate-slide-up">
+        <div className="absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-[#E91E8C] to-[#FF6EB9] text-xs font-bold text-white shadow-lg shadow-[#E91E8C]/30 animate-slide-up">
           {quantity}
         </div>
       )}
@@ -70,7 +70,7 @@ export function ProductCard({
         <button
           onClick={decrement}
           disabled={quantity <= 0}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-lg font-bold text-white/60 transition-all hover:bg-[#E91E8C]/20 hover:border-[#E91E8C]/30 hover:text-[#FF6EB9] disabled:opacity-20 disabled:cursor-not-allowed active:scale-90"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-wanda text-black text-2xl font-black shadow-[0_0_10px_var(--wanda)] transition-all hover:shadow-[0_0_20px_var(--wanda)] disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none active:scale-90"
           aria-label="Decrease"
         >
           −
@@ -80,11 +80,11 @@ export function ProductCard({
           min={0}
           value={quantity}
           onChange={(e) => handleInput(e.target.value)}
-          className="h-10 w-14 rounded-xl bg-white/5 border border-white/10 text-center text-lg font-bold text-white focus:border-[#E91E8C]/50 focus:ring-2 focus:ring-[#E91E8C]/20 focus:outline-none transition-all"
+          className="h-10 w-14 rounded-xl bg-black/40 border-2 border-white/10 text-center text-lg font-bold text-white focus:border-wanda focus:ring-2 focus:ring-(--wanda)/20 focus:outline-none transition-all"
         />
         <button
           onClick={increment}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#00C853] to-[#69F0AE] text-lg font-bold text-white shadow-lg shadow-[#00C853]/25 transition-all hover:shadow-[#00C853]/40 hover:scale-105 active:scale-90"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-cosmo text-black text-2xl font-black shadow-[0_0_10px_var(--cosmo)] transition-all hover:shadow-[0_0_20px_var(--cosmo)] active:scale-90"
           aria-label="Increase"
         >
           +

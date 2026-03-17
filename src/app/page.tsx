@@ -1,11 +1,15 @@
 "use client";
 
-import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
 import { ProductSelector } from "@/components/ProductSelector";
 import { IngredientTotals } from "@/components/IngredientTotals";
 import { ShoppingList } from "@/components/ShoppingList";
 import { RecipeEditor } from "@/components/RecipeEditor";
 import { CostCalculator } from "@/components/CostCalculator";
+import { Dashboard } from "@/components/Dashboard";
+import { Logistica } from "@/components/Logistica";
+import { EventoActual } from "@/components/EventoActual";
+import { ProductManager } from "@/components/ProductManager";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { useEffect, useState } from "react";
 
@@ -13,6 +17,12 @@ function TabContent() {
   const activeTab = useCalculatorStore((s) => s.activeTab);
 
   switch (activeTab) {
+    case "dashboard":
+      return <Dashboard />;
+    case "logistica":
+      return <Logistica />;
+    case "evento":
+      return <EventoActual />;
     case "productos":
       return <ProductSelector />;
     case "resultados":
@@ -23,8 +33,10 @@ function TabContent() {
       return <RecipeEditor />;
     case "costos":
       return <CostCalculator />;
+    case "productos_admin":
+      return <ProductManager />;
     default:
-      return <ProductSelector />;
+      return <Dashboard />;
   }
 }
 
@@ -37,26 +49,28 @@ export default function Home() {
       <div className="cw-bg flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/10 border-t-[#E91E8C]" />
-            <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-b-[#00C853]" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-wanda-pink/20 border-t-wanda-pink" />
+            <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-b-cosmo-green" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
           </div>
-          <span className="text-sm font-semibold text-white/40">Cargando...</span>
+          <span className="text-sm font-semibold text-white/40">Cargando ERP...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="cw-bg">
-      <Header />
-      <main className="mx-auto max-w-3xl px-4 py-6">
-        <TabContent />
+    <div className="cw-bg min-h-screen">
+      <Sidebar />
+      <main className="md:ml-64 transition-all duration-300">
+        <div className="mx-auto max-w-4xl px-4 py-8 relative z-10 min-h-screen">
+          <TabContent />
+        </div>
+        <footer className="py-8 text-center relative z-10 border-t border-white/5 bg-black/20 mt-12 mb-20 md:mb-0">
+          <p className="text-xs text-white/40 font-medium tracking-wide">
+            BLAMEY ERP © {new Date().getFullYear()} — V2.0
+          </p>
+        </footer>
       </main>
-      <footer className="py-8 text-center">
-        <p className="text-xs text-white/20 font-medium">
-          Carrito Chileno © {new Date().getFullYear()} — Hecho con 🌭 y ✨
-        </p>
-      </footer>
     </div>
   );
 }

@@ -27,7 +27,13 @@ export const useCalculatorStore = create<CalculatorState>()(
     (set) => ({
       selections: [],
       recipeOverrides: {},
-      prices: {},
+      prices: {
+        "pan_completo": { price: 250, perUnit: "unit" },
+        "vienesa": { price: 300, perUnit: "unit" },
+        "palta": { price: 7500, perUnit: "kg" },
+        "tomate": { price: 1800, perUnit: "kg" },
+        "mayonesa": { price: 4500, perUnit: "kg" },
+      },
       activeTab: "productos",
 
       setQuantity: (product, variant, quantity) =>

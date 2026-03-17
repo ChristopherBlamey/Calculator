@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -8,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Carrito Chileno — Calculadora de Ingredientes",
+  title: "BLAMEY ERP — Carrito Chileno",
   description:
-    "Calcula ingredientes para completos, hamburguesas, churrascos y as. Herramienta para carritos de comida chilena.",
+    "Sistema de gestión ERP para carritos de comida chilena. Calcula ingredientes, logística y ventas.",
 };
 
 export default function RootLayout({
@@ -19,10 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        {children}
+        <ThemeProvider>
+          {children}
+          <ThemeToggle />
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+
