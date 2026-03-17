@@ -12,7 +12,12 @@ export function ShoppingList() {
   const overrides = useCalculatorStore((s) => s.recipeOverrides);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
   const eventName = useEventStore((s) => s.eventName);
+  const soldItems = useEventStore((s) => s.soldItems);
   const [telefono, setTelefono] = useState("");
+
+  const totalIncome = useMemo(() => {
+    return soldItems.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
+  }, [soldItems]);
 
   const totals = useMemo(
     () => calculateTotals(selections, overrides),
@@ -55,15 +60,47 @@ export function ShoppingList() {
 
   const handleWhatsApp = () => {
     if (!telefono) return;
-    const text = generateShoppingListText(totals);
-    let message = `*Blamey ERP - Lista de Compras* 📋\n`;
+    
+    let message = `*📋 LISTA DE COMPRAS - BLAMEY ERP*\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+    
     if (eventName) {
-      message += `📅 *Evento:* ${eventName}\n\n`;
-    } else {
-      message += `\n`;
+      message += `📅 *Evento:* ${eventName}\n`;
     }
-    message += text;
-    message += `\n\n_Enviado desde Blamey ERP_`;
+    message += `📆 *Fecha:* ${new Date().toLocaleDateString("es-CL")}\n\n`;
+    
+    // Products section
+    if (soldItems.length > 0) {
+      message += `🍔 *PRODUCTOS:*\n`;
+      message += `────────────────────\n`;
+      let productsTotal = 0;
+      for (const item of soldItems) {
+        const subtotal = item.quantity * item.unitPrice;
+        productsTotal += subtotal;
+        message += `• ${item.product} ${item.variant}: ${item.quantity} x $${item.unitPrice.toLocaleString("es-CL")} = $${subtotal.toLocaleString("es-CL")}\n`;
+      }
+      message += `\n💰 *Total Productos:* $${productsTotal.toLocaleString("es-CL")}\n\n`;
+    }
+    
+    // Ingredients section
+    message += `🛒 *INGREDIENTES:*\n`;
+    message += `────────────────────\n`;
+    for (const t of totals) {
+      message += `• ${t.displayValue} ${t.displayUnit} - ${t.name}\n`;
+    }
+    
+    message += `\n📦 *Total items:* ${totals.reduce((sum, t) => sum + (parseFloat(t.displayValue) || 0), 0).toFixed(2)}\n`;
+    
+    // Summary
+    if (totalIncome > 0) {
+      message += `\n💵 *RESUMEN ECONÓMICO:*\n`;
+      message += `────────────────────\n`;
+      message += `• Ingresos: $${totalIncome.toLocaleString("es-CL")}\n`;
+    }
+    
+    message += `\n──────────────────────────────\n`;
+    message += `_Enviado desde Blamey ERP_`;
+    
     const telefonoLimpio = telefono.replace(/\D/g, "");
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${telefonoLimpio}?text=${encoded}`, "_blank");
