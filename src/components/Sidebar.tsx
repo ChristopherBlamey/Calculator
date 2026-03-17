@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { useRouter } from "next/navigation";
 import { 
   Calculator, 
   ListChecks, 
@@ -15,7 +16,8 @@ import {
   X,
   ChevronLeft,
   Package,
-  Shield
+  Shield,
+  Home
 } from "lucide-react";
 
 const TABS = [
@@ -32,6 +34,7 @@ const TABS = [
 ];
 
 export function Sidebar() {
+  const router = useRouter();
   const activeTab = useCalculatorStore((s) => s.activeTab);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,12 +45,17 @@ export function Sidebar() {
     setMobileOpen(false);
   };
 
+  const handleHomeClick = () => {
+    setActiveTab("dashboard");
+    setMobileOpen(false);
+  };
+
   return (
     <>
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-wanda-pink text-white p-3 rounded-xl shadow-lg"
+        className="fixed top-4 left-4 z-[60] md:hidden bg-wanda-pink text-white p-3 rounded-xl shadow-lg"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -55,7 +63,7 @@ export function Sidebar() {
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-[55] md:hidden backdrop-blur-sm"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -70,9 +78,13 @@ export function Sidebar() {
         {/* Logo */}
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-wanda-pink text-white p-2 rounded-xl fab-glow transform rotate-12 shrink-0">
+            <button 
+              onClick={handleHomeClick}
+              className="bg-wanda-pink text-white p-2 rounded-xl fab-glow transform rotate-12 shrink-0 hover:scale-110 transition-transform"
+              title="Volver al Dashboard"
+            >
               <span className="text-xl font-bold font-mono tracking-tighter leading-none block">BL</span>
-            </div>
+            </button>
             {!collapsed && (
               <h1 className="text-lg font-bold tracking-tight">
                 BLAMEY <span className="gradient-text-green bg-clip-text text-transparent">ERP</span>
@@ -86,6 +98,18 @@ export function Sidebar() {
             <ChevronLeft className={`w-5 h-5 text-white/60 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
           </button>
         </div>
+
+        {/* Home Button (visible when collapsed) */}
+        {collapsed && (
+          <div className="px-3 py-2">
+            <button
+              onClick={handleHomeClick}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-wanda-pink/20 text-wanda-pink hover:bg-wanda-pink/30 transition-colors"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+          </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 py-4 overflow-y-auto">
@@ -135,7 +159,7 @@ export function Sidebar() {
 
       {/* Mobile Drawer */}
       <div className={`
-        fixed top-0 left-0 h-full w-80 max-w-[85vw] z-50
+        fixed top-0 left-0 h-full w-80 max-w-[85vw] z-[60]
         bg-black/95 backdrop-blur-xl border-r border-white/10
         transform transition-transform duration-300 ease-in-out
         md:hidden
@@ -144,9 +168,13 @@ export function Sidebar() {
         {/* Mobile Header */}
         <div className="p-4 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-wanda-pink text-white p-2 rounded-xl fab-glow transform rotate-12 shrink-0">
+            <button 
+              onClick={handleHomeClick}
+              className="bg-wanda-pink text-white p-2 rounded-xl fab-glow transform rotate-12 shrink-0 hover:scale-110 transition-transform"
+              title="Volver al Dashboard"
+            >
               <span className="text-xl font-bold font-mono tracking-tighter leading-none block">BL</span>
-            </div>
+            </button>
             <h1 className="text-lg font-bold tracking-tight">
               BLAMEY <span className="gradient-text-green bg-clip-text text-transparent">ERP</span>
             </h1>
