@@ -12,7 +12,7 @@ import {
 interface ProductIngredient { ingredient_id: string; quantity: number; unit: string; }
 
 export function ProductManager() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { 
     ingredientBase, 
     productBase,
@@ -183,6 +183,17 @@ export function ProductManager() {
       setSaving(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="relative">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-wanda-pink/20 border-t-wanda-pink" />
+          <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-b-cosmo-green" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

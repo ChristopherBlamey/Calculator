@@ -256,7 +256,7 @@ _Enviado desde Blamey ERP_`;
               >
                 <input
                   type="text"
-                  placeholder="Ej: Buda 2961, Maipú, Santiago"
+                  placeholder="Ej: Tu dirección, Comuna, Ciudad"
                   value={originAddress}
                   onChange={(e) => setOriginAddress(e.target.value)}
                   className="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-wanda-pink/70 transition-all font-medium text-white placeholder:text-white/40"
