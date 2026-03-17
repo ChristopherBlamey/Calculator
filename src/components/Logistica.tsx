@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useEventStore } from "@/store/useEventStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown, Save, Loader2 } from "lucide-react";
+import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown, Save, Loader2, Phone, MessageCircle } from "lucide-react";
 import { useJsApiLoader, GoogleMap, Autocomplete, DirectionsRenderer } from "@react-google-maps/api";
 
 const LIBRARIES: ("places")[] = ["places"];
@@ -65,6 +65,7 @@ export function Logistica() {
   });
 
   const [destination, setDestination] = useState("");
+  const [telefono, setTelefono] = useState("");
   const [rendimiento, setRendimiento] = useState(12);
   const [precioLitro, setPrecioLitro] = useState(1150);
   const [isSaved, setIsSaved] = useState(false);
@@ -191,6 +192,22 @@ export function Logistica() {
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
     }
+  };
+
+  const handleWhatsApp = () => {
+    if (!telefono || !destination || !originAddress) return;
+    
+    const mensaje = `🚚 *Ruta de Entrega* - *Blamey ERP*
+
+*📍 Origen:* ${originAddress}
+*🏁 Destino:* ${destination}
+*📏 Distancia:* ${distanceInfo?.text} (ida y vuelta: ${((distanceInfo?.value || 0) * 2 / 1000).toFixed(1)} km)
+*⛽ Costo Combustible:* $${distanceInfo?.fuelCost.toLocaleString("es-CL")}
+
+_Enviado desde Blamey ERP_`;
+    
+    const telefonoLimpio = telefono.replace(/\D/g, "");
+    window.open(`https://wa.me/${telefonoLimpio}?text=${encodeURIComponent(mensaje)}`, '_blank');
   };
 
   if (loadError) {
@@ -324,6 +341,21 @@ export function Logistica() {
             )}
           </div>
 
+          <div>
+            <label className="flex items-center gap-2 text-sm font-bold mb-1.5 text-white/90">
+              <Phone className="w-4 h-4 text-cosmo-green" />
+              WhatsApp (opcional)
+            </label>
+            <input
+              type="tel"
+              placeholder="+56 9 1234 5678"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+              className="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cosmo-green/70 transition-all font-medium text-white placeholder:text-white/40"
+            />
+            <p className="text-xs text-white/40 mt-1">Para enviar la ruta por WhatsApp</p>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-bold mb-1.5 text-white/90">
@@ -446,6 +478,16 @@ export function Logistica() {
               "Usar este costo en el Evento"
             )}
           </button>
+
+          {telefono && (
+            <button
+              onClick={handleWhatsApp}
+              className="w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 bg-green-600 text-white hover:bg-green-500"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Enviar ruta por WhatsApp
+            </button>
+          )}
         </div>
       )}
     </div>
