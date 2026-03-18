@@ -234,17 +234,17 @@ export default function ERPPage() {
   }
 
   return (
-    <div className="cw-bg min-h-screen flex flex-col pt-14 pb-16 md:pb-0">
+    <div className="cw-bg min-h-screen flex flex-col pt-14 pb-20 md:pb-0">
       <InactivityModal />
       <Sidebar />
       <main className="flex-1 md:ml-64 transition-all duration-300">
-        <div className="mx-auto max-w-4xl px-3 md:px-4 py-4 md:py-6 relative z-10 min-h-[calc(100vh-56px)]">
+        <div className="mx-auto max-w-4xl px-3 md:px-4 pt-20 md:pt-6 pb-24 md:pb-6 relative z-10 min-h-[calc(100vh-56px)]">
           <TabContent />
         </div>
         <footer className="py-3 text-center relative z-10 border-t border-white/5 bg-black/20 fixed bottom-0 left-0 right-0 md:relative">
           <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-6">
             <p className="text-xs text-white/40 font-medium tracking-wide">
-              BLAMEY ERP © {new Date().getFullYear()} — V1.8
+              BLAMEY ERP © {new Date().getFullYear()} — V2.2
             </p>
             <Link 
               href="/manual"
