@@ -12,10 +12,11 @@ import { EventoActual } from "@/components/EventoActual";
 import { ProductManager } from "@/components/ProductManager";
 import { AdminPanel } from "@/components/AdminPanel";
 import { AuthButton } from "@/components/AuthButton";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { useUserData } from "@/hooks/useUserData";
 import { useAuth } from "@/hooks/useAuth";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import Link from "next/link";
 import { FileText, AlertTriangle, LogOut, Clock, WifiOff, RefreshCw } from "lucide-react";
 import { useInactivityTimeout } from "@/hooks/useInactivityTimeout";
@@ -117,98 +118,95 @@ function ErrorScreen({ onRetry }: { onRetry: () => void }) {
 function TabContent() {
   const activeTab = useCalculatorStore((s) => s.activeTab);
 
+  // Wrap each component with ErrorBoundary
+  const wrapWithBoundary = (component: React.ReactNode) => (
+    <ErrorBoundary>{component}</ErrorBoundary>
+  );
+
   switch (activeTab) {
     case "dashboard":
-      return <Dashboard />;
+      return wrapWithBoundary(<Dashboard />);
     case "logistica":
-      return <Logistica />;
+      return wrapWithBoundary(<Logistica />);
     case "evento":
-      return <EventoActual />;
+      return wrapWithBoundary(<EventoActual />);
     case "productos":
-      return <ProductSelector />;
+      return wrapWithBoundary(<ProductSelector />);
     case "resultados":
-      return <IngredientTotals />;
+      return wrapWithBoundary(<IngredientTotals />);
     case "lista":
-      return <ShoppingList />;
+      return wrapWithBoundary(<ShoppingList />);
     case "recetas":
-      return <RecipeEditor />;
+      return wrapWithBoundary(<RecipeEditor />);
     case "costos":
-      return <CostCalculator />;
+      return wrapWithBoundary(<CostCalculator />);
     case "productos_admin":
-      return <ProductManager />;
+      return wrapWithBoundary(<ProductManager />);
     case "admin":
-      return <AdminPanel />;
+      return wrapWithBoundary(<AdminPanel />);
     default:
-      return <Dashboard />;
+      return wrapWithBoundary(<Dashboard />);
   }
 }
 
 export default function ERPPage() {
-  const [mounted] = useState(true);
-  const [loadError, setLoadError] = useState(false);
   const { user, loading: authLoading } = useAuth();
-  const { fetchAllData, loading: dataLoading } = useUserData();
+  const { fetchAllData, loading: dataLoading, error: dataError } = useUserData();
 
-  // Cargar datos solo una vez cuando el usuario está disponible
+  // Cargar datos cuando el usuario está disponible
   useEffect(() => {
-    if (user && !dataLoading) {
-      fetchAllData().catch(() => setLoadError(true));
+    if (user) {
+      fetchAllData();
     }
-  }, [user]); // Solo se ejecuta cuando user cambia
+  }, [user]);
 
-  // Prevenir navegación hacia atrás - manejar según estado de sesión
+  // Prevenir navegación hacia atrás
   useEffect(() => {
-    // Si no hay usuario y no está cargando, redirigir al landing
     if (!authLoading && !user) {
       window.location.href = '/';
       return;
     }
 
-    const handlePopState = () => {
-      if (user) {
-        // Si hay usuario logueado, siempre ir al ERP (dashboard)
-        window.history.pushState(null, "", "/erp");
-      } else {
-        // Si no hay usuario, ir al landing
-        window.location.href = '/';
-      }
-    };
-
-    // Siempre aseguramos que la URL sea /erp mientras haya sesión
     if (user) {
       window.history.pushState(null, "", "/erp");
     }
     
-    window.addEventListener("popstate", handlePopState);
-    
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
+    const handlePopState = () => {
+      if (user) {
+        window.history.pushState(null, "", "/erp");
+      } else {
+        window.location.href = '/';
+      }
     };
+    
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, [user, authLoading]);
 
-  // Si no está logueado, redirigir al landing
+  // Redirigir si no está logueado
   useEffect(() => {
-    if (mounted && !authLoading && !user) {
+    if (!authLoading && !user) {
       window.location.href = '/';
     }
-  }, [mounted, authLoading, user]);
+  }, [authLoading, user]);
 
   const handleRetry = useCallback(() => {
-    setLoadError(false);
     if (user) {
-      fetchAllData().catch(() => setLoadError(true));
+      fetchAllData();
     }
   }, [user, fetchAllData]);
 
-  // Mostrar contenido directamente sin loading infinito
-  if (!user && authLoading) {
+  // Mostrar loading solo durante autenticación
+  if (authLoading) {
     return <LoadingScreen />;
   }
 
-  if (loadError) {
+  // Mostrar error si hay problema con datos
+  if (dataError) {
     return <ErrorScreen onRetry={handleRetry} />;
   }
 
+  // Mostrar nothing mientras carga datos del usuario (pero no el loading infinito)
   if (!user) {
     return null;
   }

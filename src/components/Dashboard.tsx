@@ -55,13 +55,15 @@ export function Dashboard() {
       setLoading(true);
       try {
         const { data: eventosData, error } = await supabase.from('eventos').select('*');
-        const eventos = eventosData as Evento[] || [];
         
         if (error) {
           console.error("Error fetching eventos:", error);
           setLoading(false);
           return;
         }
+        
+        const eventos = eventosData as any[] || [];
+        setLoading(false);
 
         if (eventos && eventos.length > 0) {
           // 1. Calculate basic stats

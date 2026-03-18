@@ -135,10 +135,16 @@ export function useUserData(): UseUserDataReturn {
   }, [supabase, user]);
 
   const fetchAllData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    await Promise.all([fetchBaseData(), fetchUserData()]);
-    setLoading(false);
+    try {
+      setLoading(true);
+      setError(null);
+      await Promise.all([fetchBaseData(), fetchUserData()]);
+    } catch (err) {
+      console.error("Error fetching all data:", err);
+      setError("Error al cargar datos");
+    } finally {
+      setLoading(false);
+    }
   }, [fetchBaseData, fetchUserData]);
 
   const addIngredientUser = useCallback(async (ingredient: Partial<IngredientUser>): Promise<IngredientUser | null> => {
