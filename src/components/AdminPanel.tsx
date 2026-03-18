@@ -1,4 +1,36 @@
-"use client";
+/**
+ * @file AdminPanel.tsx
+ * @description Panel de administración del sistema para el super administrador
+ * 
+ * Este componente proporciona acceso completo a:
+ * - Gestión de usuarios registrados
+ * - Datos base del sistema (ingredientes y productos)
+ * - Estadísticas globales
+ * 
+ * @author BLAMEY ERP Team
+ * @version 2.3.2
+ * 
+ * @access RESTRINGIDO - Solo para administrador
+ * @validation 
+ * - Frontend: Verifica que el email sea cristopher0915@gmail.com
+ * - Backend (Supabase): Políticas RLS que permiten acceso solo al admin
+ * 
+ * @security
+ * La validación de acceso se realiza en dos niveles:
+ * 1. Frontend: Comparación de email del usuario con ADMIN_EMAIL
+ * 2. Supabase RLS: Políticas de base de datos que restrict access
+ * 
+ * @example
+ * // Verificación de acceso:
+ * const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+ * // ADMIN_EMAIL = "cristopher0915@gmail.com"
+ * 
+ * // Políticas Supabase RLS relacionadas:
+ * -- Admin puede leer todos los perfiles
+  * CREATE POLICY "Admin can read all profiles"
+  * ON public.perfiles FOR SELECT
+  * USING (auth.uid() = id);
+  */
 
 import { useState, useEffect } from "react";
 import Image from "next/image";

@@ -1,4 +1,36 @@
-"use client";
+/**
+ * @file useUserData.ts
+ * @description Hook para gestión de datos de usuario en Supabase
+ * 
+ * Proporciona funciones para:
+ * - Obtener ingredientes y productos base
+ * - Gestionar ingredientes y productos del usuario
+ * - Actualizar precios
+ * 
+ * @author BLAMEY ERP Team
+ * @version 2.3.2
+ * 
+ * @access Requires authentication
+ * 
+ * @validation
+ * Las políticas RLS de Supabase aseguran que cada usuario solo acceda a sus propios datos:
+ * - ingredientes_usuario: WHERE auth.uid() = user_id
+ * - productos_usuario: WHERE auth.uid() = user_id
+ * - precios_usuario: WHERE auth.uid() = user_id
+ * 
+ * El acceso de administrador (cristopher0915@gmail.com) se maneja mediante políticas RLS adicionales.
+ * 
+ * @example
+ * const { 
+ *   ingredientBase, 
+ *   productUser, 
+ *   fetchAllData, 
+ *   updatePrice 
+ * } = useUserData();
+ * 
+ * // Actualizar precio de ingrediente
+ * await updatePrice('ingredient-base-id', 8000);
+ */
 
 import { supabase } from "@/lib/supabase";
 import { useCallback, useState, useEffect, useRef } from "react";

@@ -1,4 +1,39 @@
-"use client";
+/**
+ * @file useUnifiedStore.ts
+ * @description Store unificado de Zustand para gestión de items, ingredientes y temas
+ * 
+ * Este store implementa:
+ * - Gestión unificada de items (productos y recetas)
+ * - Cálculo en cascada de costos cuando cambia el precio de un ingrediente
+ * - Cambio de tema (oscuro/claro) persistente
+ * 
+ * @author BLAMEY ERP Team
+ * @version 2.3.2
+ * 
+ * @access Public - Sin restricciones de acceso
+ * 
+ * @validation Admin
+ * La validación de administrador se realiza en el frontend comparando el email del usuario
+ * con 'cristopher0915@gmail.com'. Esta validación también debe implementarse en Supabase RLS.
+ * 
+ * @features
+ * - updateIngredientPrice: Actualiza precio de ingrediente y recalcula recetas afectadas
+ * - recalculateAllCosts: Recalcula todos los costos de recetas
+ * - getRecipeCost: Calcula costo de una receta basada en sus ingredientes
+ * - getRecipeMargin: Calcula margen de ganancia de una receta
+ * 
+ * @example
+ * // Uso del store:
+ * const { items, ingredients, updateIngredientPrice } = useUnifiedStore();
+ * 
+ * // Actualizar precio de ingrediente:
+ * updateIngredientPrice('ingredient-id-123', 8000);
+ * 
+ * // El sistema automáticamente:
+ * // 1. Actualiza el precio del ingrediente
+ * // 2. Identifica recetas afectadas
+ * // 3. Recalcula costos y márgenes
+ */
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";

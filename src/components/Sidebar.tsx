@@ -1,4 +1,33 @@
-"use client";
+/**
+ * @file Sidebar.tsx
+ * @description Navegación principal del ERP con menú lateral y header
+ * 
+ * Proporciona:
+ * - Menú de navegación entre secciones
+ * - Header con título y theme switcher
+ * - Diseño responsivo para móvil y desktop
+ * 
+ * @author BLAMEY ERP Team
+ * @version 2.3.2
+ * 
+ * @features
+ * - Theme Switcher: Botón sol/luna para cambiar entre modo claro y oscuro
+ * - Navegación adaptativa: Menú lateral en desktop, drawer en móvil
+ * - Indicador de sección activa
+ * 
+ * @example
+ * // El menú incluye:
+ * - Dashboard: Estadísticas y métricas
+ * - Evento: Gestión de eventos de venta
+ * - Logística: Ruta y costos de transporte
+ * - Productos: Catálogo de productos para venta
+ * - Recetas: Recetas con costos calculados
+ * - Resultados: Totales de ingredientes
+ * - Lista: Lista de compras
+ * - Finanzas: Calculadora de costos
+ * - Admin Prod: Administración de productos
+ * - Admin: Panel de administración (solo cristopher0915@gmail.com)
+ */
 
 import { useState } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
