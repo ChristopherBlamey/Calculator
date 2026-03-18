@@ -2,15 +2,13 @@
 
 import { useState, useMemo } from "react";
 import { useEventStore } from "@/store/useEventStore";
-import { useInventoryStore } from "@/store/useInventoryStore";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { calculateTotals, calculateCosts } from "@/lib/calculator";
-import { Calendar, Receipt, Trash2, PartyPopper, Play, CheckCircle2, DollarSign, FileText, Save } from "lucide-react";
+import { Calendar, Receipt, Trash2, PartyPopper, Play, DollarSign, FileText, Save } from "lucide-react";
 import { generateBudgetPDF } from "@/lib/export";
 
 export function EventoActual() {
   const event = useEventStore();
-  const decrementStock = useInventoryStore((s) => s.decrementStock);
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -54,26 +52,6 @@ export function EventoActual() {
       return;
     }
     await generateBudgetPDF(event.eventName || "Presupuesto", event.soldItems);
-  };
-
-  const handleFinalize = async () => {
-    setIsFinalizing(true);
-    
-    // Simulate updating inventory
-    // In a real app we'd map products to recipe ingredients here and call decrementStock
-    
-    // Finalize to Supabase via store
-    const result = await event.finalizeEvent(realIngredientCost);
-    
-    setIsFinalizing(false);
-    
-    if (result.success) {
-      setSuccess(true);
-      event.clearEvent();
-      setTimeout(() => setSuccess(false), 5000);
-    } else {
-      alert("Error al guardar el evento. Revisa la consola.");
-    }
   };
 
   if (success) {

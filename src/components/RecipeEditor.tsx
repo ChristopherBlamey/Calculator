@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { RECIPES, INGREDIENTS } from "@/data/recipes";
 import { RecipeIngredient } from "@/types";
@@ -9,9 +9,19 @@ export function RecipeEditor() {
   const overrides = useCalculatorStore((s) => s.recipeOverrides);
   const setRecipeOverride = useCalculatorStore((s) => s.setRecipeOverride);
   const clearRecipeOverrides = useCalculatorStore((s) => s.clearRecipeOverrides);
+  const editingProduct = useCalculatorStore((s) => s.editingProduct);
+  const setEditingProduct = useCalculatorStore((s) => s.setEditingProduct);
   const [selectedRecipe, setSelectedRecipe] = useState<string>(
-    `${RECIPES[0].product}_${RECIPES[0].variant}`
+    editingProduct || `${RECIPES[0].product}_${RECIPES[0].variant}`
   );
+
+  // Actualizar selectedRecipe cuando editingProduct cambia
+  useEffect(() => {
+    if (editingProduct) {
+      setSelectedRecipe(editingProduct);
+      setEditingProduct(null);
+    }
+  }, [editingProduct, setEditingProduct]);
 
   const recipe = useMemo(() => {
     const [product, variant] = selectedRecipe.split("_");

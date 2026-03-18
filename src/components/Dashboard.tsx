@@ -3,10 +3,39 @@
 import { useEffect, useState } from "react";
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  LineChart, Line, CartesianGrid, Legend, AreaChart, Area, PieChart, Pie, Cell
+  LineChart, Line, CartesianGrid, Legend, AreaChart, Area, Cell
 } from "recharts";
 import { supabase } from "@/lib/supabase";
-import { TrendingUp, DollarSign, CalendarCheck, Truck, Percent, BarChart3, ShoppingBag } from "lucide-react";
+import { TrendingUp, CalendarCheck, Truck, Percent, BarChart3, ShoppingBag } from "lucide-react";
+
+interface Evento {
+  id: string;
+  total_income: number;
+  net_profit: number;
+  total_cost: number;
+  fuel_cost: number;
+  event_date: string;
+  sold_items: SoldItem[];
+}
+
+interface SoldItem {
+  product: string;
+  variant: string;
+  quantity: number;
+}
+
+interface TopProduct {
+  name: string;
+  count: number;
+}
+
+interface MonthlyData {
+  month: string;
+  income: number;
+  profit: number;
+  cost: number;
+  fuel: number;
+}
 
 export function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -18,15 +47,15 @@ export function Dashboard() {
     gastoCombustible: 0,
     margenPromedio: 0
   });
-  const [topProducts, setTopProducts] = useState<any[]>([]);
-  const [monthlyData, setMonthlyData] = useState<any[]>([]);
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
         const { data: eventosData, error } = await supabase.from('eventos').select('*');
-        const eventos = eventosData as any[];
+        const eventos = eventosData as Evento[] || [];
         
         if (error) {
           console.error("Error fetching eventos:", error);
@@ -48,8 +77,8 @@ export function Dashboard() {
           // 2. Aggregate Top Products
           const productCounts: Record<string, number> = {};
           eventos.forEach(ev => {
-            const items = (ev.sold_items || []) as any[];
-            items.forEach(item => {
+            const items = ev.sold_items || [];
+            items.forEach((item: SoldItem) => {
               const name = `${item.product} ${item.variant}`;
               productCounts[name] = (productCounts[name] || 0) + item.quantity;
             });
@@ -102,6 +131,8 @@ export function Dashboard() {
     );
   }
 
+  const hasData = stats.totalEventos > 0;
+
   return (
     <div className="space-y-6 animate-slide-up">
       <div className="flex items-center justify-between">
@@ -109,6 +140,20 @@ export function Dashboard() {
           Dashboard <span className="gradient-text-green">BLAMEY</span>
         </h2>
       </div>
+
+      {!hasData && (
+        <div className="glass-card p-8 text-center space-y-4 border border-wanda-pink/30">
+          <div className="w-16 h-16 mx-auto rounded-full bg-wanda-pink/10 flex items-center justify-center">
+            <TrendingUp className="w-8 h-8 text-wanda-pink" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">Bienvenido al Dashboard</h3>
+            <p className="text-white/60 mt-2">
+              Aún no tienes eventos registrados. ¡Registra tu primer evento para ver tus estadísticas aquí!
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* KPI Cards Reestructurados */}
       <div className="grid gap-4 md:grid-cols-3">
@@ -120,11 +165,11 @@ export function Dashboard() {
             <TrendingUp className="h-5 w-5 text-wanda-pink" />
           </div>
           <div className="text-3xl font-black gradient-text-pink relative z-10">
-            ${stats.gananciaNeta.toLocaleString("es-CL")}
+            {hasData ? `$${stats.gananciaNeta.toLocaleString("es-CL")}` : "—"}
           </div>
           <div className="mt-2 flex items-center gap-2 text-xs opacity-60">
             <CalendarCheck className="w-3 h-3" />
-            <span>En {stats.totalEventos} eventos registrados</span>
+            <span>En {stats.totalEventos} evento{stats.totalEventos !== 1 ? 's' : ''} registrado{stats.totalEventos !== 1 ? 's' : ''}</span>
           </div>
         </div>
 
@@ -136,10 +181,10 @@ export function Dashboard() {
             <Percent className="h-5 w-5 text-cosmo-green" />
           </div>
           <div className="text-3xl font-black gradient-text-green relative z-10">
-            {stats.margenPromedio.toFixed(1)}%
+            {hasData ? `${stats.margenPromedio.toFixed(1)}%` : "—"}
           </div>
           <div className="mt-2 text-xs opacity-60">
-            Punto de equilibrio saludable
+            {hasData ? 'Punto de equilibrio saludable' : 'Sin datos suficientes'}
           </div>
         </div>
 
@@ -150,10 +195,10 @@ export function Dashboard() {
             <Truck className="h-5 w-5 text-blue-400" />
           </div>
           <div className="text-3xl font-bold text-white">
-            ${stats.gastoCombustible.toLocaleString("es-CL")}
+            {hasData ? `$${stats.gastoCombustible.toLocaleString("es-CL")}` : "—"}
           </div>
           <div className="mt-2 text-xs opacity-60">
-            Inversión en combustible y traslados
+            {hasData ? 'Inversión en combustible y traslados' : 'Sin datos disponibles'}
           </div>
         </div>
       </div>
@@ -185,7 +230,7 @@ export function Dashboard() {
                   <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value/1000}k`} />
                   <Tooltip 
                     contentStyle={{ borderRadius: '12px', background: 'rgba(26,26,46,0.95)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)' }}
-                    formatter={(value: any) => [`$${Number(value).toLocaleString('es-CL')}`, '']}
+                    formatter={(value) => [`$${Number(value).toLocaleString('es-CL')}`, '']}
                   />
                   <Legend />
                   <Area type="monotone" name="Ingresos ($)" dataKey="income" stroke="var(--cosmo)" fillOpacity={1} fill="url(#colorIncome)" />
@@ -214,7 +259,7 @@ export function Dashboard() {
                   <Tooltip 
                     cursor={{fill: 'rgba(255,255,255,0.05)'}}
                     contentStyle={{ borderRadius: '12px', background: 'rgba(26,26,46,0.95)', border: '1px solid rgba(127,255,0,0.3)' }}
-                    formatter={(value: any) => [`${value} unidades`, 'Ventas']}
+                    formatter={(value) => [`${value} unidades`, 'Ventas']}
                   />
                   <Bar dataKey="count" fill="var(--cosmo)" radius={[0, 4, 4, 0]}>
                     {topProducts.map((entry, index) => (
@@ -244,7 +289,7 @@ export function Dashboard() {
                   <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value/1000}k`} />
                   <Tooltip 
                     contentStyle={{ borderRadius: '12px', background: 'rgba(26,26,46,0.95)', border: '1px solid rgba(59,130,246,0.3)' }}
-                    formatter={(value: any) => [`$${Number(value).toLocaleString('es-CL')}`, '']}
+                    formatter={(value) => [`$${Number(value).toLocaleString('es-CL')}`, '']}
                   />
                   <Legend />
                   <Line type="monotone" name="Costo Ingredientes" dataKey="cost" stroke="rgba(255,255,255,0.8)" strokeWidth={2} dot={{ r: 3 }} />

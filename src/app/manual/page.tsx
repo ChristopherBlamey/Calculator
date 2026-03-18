@@ -7,17 +7,16 @@ import {
   ShoppingCart, 
   Package, 
   DollarSign, 
-  Calendar,
   Calculator,
-  Settings,
   Users,
-  Truck,
   FileText,
   ChevronRight,
-  CheckCircle
+  CheckCircle,
+  Calendar
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-function Section({ id, icon: Icon, title, children }: { id: string, icon: any, title: string, children: React.ReactNode }) {
+function Section({ id, icon: Icon, title, children }: { id: string, icon: LucideIcon, title: string, children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-8">
       <div className="flex items-center gap-3 mb-4">

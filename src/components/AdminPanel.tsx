@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useAdminStore } from "@/store/useAdminStore";
 import { useAdminData, type UserData } from "@/hooks/useAdminData";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Users, Package, ShoppingBag, Calendar, Lock, LogOut,
   ChevronDown, ChevronUp, Trash2, Plus, Loader2, AlertCircle,
-  Database, DollarSign, ChefHat
+  Database, ChefHat, Shield
 } from "lucide-react";
+
+const ADMIN_EMAIL = "cristopher0915@gmail.com";
 
 function AdminLogin({ onLogin }: { onLogin: () => void }) {
   const [password, setPassword] = useState("");
@@ -90,10 +94,10 @@ function UserCard({ user, expanded, onToggle }: { user: UserData; expanded: bool
         className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-wanda-pink/20 flex items-center justify-center">
-            {user.profile.avatar_url ? (
-              <img src={user.profile.avatar_url} alt="" className="w-10 h-10 rounded-full" />
-            ) : (
+          <div className="w-10 h-10 rounded-full bg-wanda-pink/20 flex items-center justify-center overflow-hidden">
+                {user.profile.avatar_url ? (
+                  <Image src={user.profile.avatar_url} alt="" width={40} height={40} className="w-full h-full object-cover" />
+                ) : (
               <span className="text-wanda-pink font-bold">
                 {user.profile.nombre?.charAt(0).toUpperCase() || "?"}
               </span>
@@ -209,7 +213,6 @@ function BaseDataManager() {
   const { 
     baseIngredients, 
     baseProducts, 
-    loading, 
     fetchBaseData,
     addBaseIngredient,
     addBaseProduct,
@@ -384,16 +387,36 @@ function BaseDataManager() {
 }
 
 export function AdminPanel() {
+  const { user } = useAuth();
   const { isAdmin, logout } = useAdminStore();
   const { users, loading, error, fetchAllUsers } = useAdminData();
   const [activeSection, setActiveSection] = useState<"users" | "base">("users");
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
+  
+  // Verificar si el email del usuario es el admin
+  const isAuthorizedAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 
   useEffect(() => {
-    if (isAdmin) {
+    if (isAdmin && isAuthorizedAdmin) {
       fetchAllUsers();
     }
-  }, [isAdmin, fetchAllUsers]);
+  }, [isAdmin, isAuthorizedAdmin, fetchAllUsers]);
+
+  // Si el usuario no está autorizado, mostrar mensaje
+  if (!isAuthorizedAdmin) {
+    return (
+      <div className="glass-card p-8 text-center space-y-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-2xl">
+          <Shield className="w-8 h-8 text-red-400" />
+        </div>
+        <h2 className="text-xl font-bold text-white">Acceso Restringido</h2>
+        <p className="text-white/60">
+          No tienes permisos para acceder al panel de administración. 
+          Solo el administrador principal puede acceder a esta sección.
+        </p>
+      </div>
+    );
+  }
 
   const toggleUser = (userId: string) => {
     setExpandedUsers((prev) => {

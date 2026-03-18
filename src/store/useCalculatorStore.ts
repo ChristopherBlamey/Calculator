@@ -12,6 +12,7 @@ interface CalculatorState {
   recipeOverrides: RecipeOverrides;
   prices: PriceMap;
   activeTab: string;
+  editingProduct: string | null;
 
   // Actions
   setQuantity: (product: string, variant: string, quantity: number) => void;
@@ -20,6 +21,7 @@ interface CalculatorState {
   clearRecipeOverrides: () => void;
   setPrice: (ingredientId: string, price: number, perUnit: "unit" | "kg") => void;
   setActiveTab: (tab: string) => void;
+  setEditingProduct: (productKey: string | null) => void;
 }
 
 export const useCalculatorStore = create<CalculatorState>()(
@@ -35,6 +37,7 @@ export const useCalculatorStore = create<CalculatorState>()(
         "mayonesa": { price: 4500, perUnit: "kg" },
       },
       activeTab: "productos",
+      editingProduct: null,
 
       setQuantity: (product, variant, quantity) =>
         set((state) => {
@@ -76,6 +79,8 @@ export const useCalculatorStore = create<CalculatorState>()(
         })),
 
       setActiveTab: (tab) => set({ activeTab: tab }),
+
+      setEditingProduct: (productKey) => set({ editingProduct: productKey }),
     }),
     {
       name: "carrito-chileno-storage",

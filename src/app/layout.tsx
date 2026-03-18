@@ -38,6 +38,9 @@ export const metadata: Metadata = {
     "gestión pedidos comida",
     "calculadora sandwich",
     "control inventario comida",
+    "ERP Santiago Chile",
+    "software restaurant Chile",
+    " delivery Chile",
   ],
   authors: [{ name: "Smartap", url: "https://www.smartap.cl" }],
   creator: "Smartap",
@@ -59,7 +62,7 @@ export const metadata: Metadata = {
     url: "https://www.smartap.cl",
     siteName: "Smartap",
     title: "Smartap - Calculadora de Comida Chilena ERP",
-    description: "Calculadora de comida, completos, inventory management y ERP gratuito para negocios de comida en Chile.",
+    description: "Calculadora de comida, inventory management y ERP gratuito para negocios de comida en Chile.",
     images: [
       {
         url: "/og-image.png",
@@ -79,7 +82,18 @@ export const metadata: Metadata = {
     canonical: "https://www.smartap.cl",
     languages: {
       es: "https://www.smartap.cl",
+      "es-CL": "https://www.smartap.cl",
     },
+  },
+  other: {
+    "geo.region": "CL",
+    "geo.placename": "Santiago",
+    "geo.position": "-33.4489;-70.6693",
+    ICBM: "-33.4489, -70.6693",
+    "business:contactdata:street_address": "Santiago",
+    "business:contactdata:locality": "Santiago",
+    "business:contactdata:region": "Metropolitana",
+    "business:contactdata:country_name": "Chile",
   },
   category: "business",
   classification: "ERP, Calculator, Food Business",

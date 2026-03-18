@@ -17,6 +17,7 @@ export function ProductSelector() {
   const selections = useCalculatorStore((s) => s.selections);
   const resetSelections = useCalculatorStore((s) => s.resetSelections);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
+  const setEditingProduct = useCalculatorStore((s) => s.setEditingProduct);
   
   const addSoldItem = useEventStore((s) => s.addSoldItem);
   const prices = useCalculatorStore((s) => s.prices);
@@ -125,6 +126,7 @@ export function ProductSelector() {
                 categoryLabel={cat.label}
                 emoji={cat.emoji}
                 onEdit={() => {
+                  setEditingProduct(`${cat.type}_${v.key}`);
                   setActiveTab("recetas");
                 }}
               />

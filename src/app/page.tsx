@@ -18,8 +18,7 @@ import { useUserData } from "@/hooks/useUserData";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FileText, Loader2 } from "lucide-react";
-import { downloadManual } from "@/lib/manual";
+import { FileText } from "lucide-react";
 
 function TabContent() {
   const activeTab = useCalculatorStore((s) => s.activeTab);

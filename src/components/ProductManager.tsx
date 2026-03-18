@@ -162,11 +162,9 @@ export function ProductManager() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
   const [syncMessage, setSyncMessage] = useState<{type: "success" | "error", text: string} | null>(null);
-  const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
   const [newIngredient, setNewIngredient] = useState({ name: "", unit: "unidad", cost_per_unit: 0 });
   const [newProduct, setNewProduct] = useState({ name: "", type: "custom", variant: "", price: 0, ingredients: [] as ProductIngredient[] });
   const [selectedIngredient, setSelectedIngredient] = useState("");
-  const [editingPrices, setEditingPrices] = useState<Record<string, number>>({});
 
   const allIngredients = useMemo(() => {
     return ingredientBase.map(base => {
@@ -186,32 +184,9 @@ export function ProductManager() {
     }
   }, [user, fetchAllData]);
 
-  useEffect(() => {
-    const prices: Record<string, number> = {};
-    ingredientBase.forEach(ing => {
-      prices[ing.id] = getIngredientPrice(ing.id);
-    });
-    setEditingPrices(prices);
-  }, [ingredientBase, getIngredientPrice]);
-
   const showMessage = (type: "success" | "error", text: string) => {
     setSyncMessage({ type, text });
     setTimeout(() => setSyncMessage(null), 3000);
-  };
-
-  const handleSavePrice = async (ingredientBaseId: string) => {
-    const newPrice = editingPrices[ingredientBaseId];
-    if (newPrice === undefined) return;
-    
-    setSaving(true);
-    try {
-      await updatePrice(ingredientBaseId, newPrice);
-      showMessage("success", "Precio actualizado");
-    } catch (error) {
-      showMessage("error", "Error al guardar precio");
-    } finally {
-      setSaving(false);
-    }
   };
 
   const handleAddIngredient = async () => {
@@ -406,39 +381,7 @@ export function ProductManager() {
         />
       )}
 
-      {/* Suministros Sections */}
-      {activeSection === "suministros" && activeSubsection === "ingredientes" && (
-        <div className="space-y-4">
-          <p className="text-white/60 text-sm">Personaliza los precios de los ingredientes base para tu negocio</p>
-          <div className="grid gap-3">
-            {allIngredients.map((ing) => (
-              <div key={ing.baseId} className="glass-card p-4 flex items-center justify-between gap-4">
-                <div className="flex-1">
-                  <p className="font-bold text-white">{ing.name}</p>
-                  <p className="text-xs text-white/40">{ing.unit} • Precio base: ${ing.cost_per_unit?.toLocaleString("es-CL")}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-white/40">$</span>
-                  <input 
-                    type="number" 
-                    value={editingPrices[ing.baseId] ?? ing.cost_per_unit} 
-                    onChange={(e) => setEditingPrices(prev => ({ ...prev, [ing.baseId]: parseFloat(e.target.value) || 0 }))}
-                    className="bg-black/40 border border-white/20 rounded-xl px-3 py-2 text-white w-28"
-                  />
-                  <button 
-                    onClick={() => handleSavePrice(ing.baseId)} 
-                    disabled={saving}
-                    className="p-2 bg-cosmo-green text-black rounded-xl hover:bg-[#69F0AE] disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
+      {/* Suministros - Ingredientes */}
       {activeSection === "suministros" && activeSubsection === "ingredientes" && (
         <div className="space-y-4">
           <div className="flex justify-end">

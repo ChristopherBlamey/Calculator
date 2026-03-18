@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
+import Image from "next/image";
 import { LogOut, User, Loader2 } from "lucide-react";
 
 export function AuthButton() {
@@ -45,15 +46,17 @@ export function AuthButton() {
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-xl">
-        {profile?.avatar_url ? (
-          <img
-            src={profile.avatar_url}
-            alt={profile.nombre}
-            className="w-8 h-8 rounded-full"
-          />
-        ) : (
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-xl">
+          {profile?.avatar_url ? (
+            <Image
+              src={profile.avatar_url}
+              alt={profile.nombre || "Usuario"}
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full"
+            />
+          ) : (
           <div className="w-8 h-8 rounded-full bg-wanda-pink flex items-center justify-center">
             <User className="w-4 h-4 text-white" />
           </div>

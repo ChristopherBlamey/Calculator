@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useEventStore } from "@/store/useEventStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
@@ -9,7 +9,6 @@ import { useJsApiLoader, GoogleMap, Autocomplete, DirectionsRenderer } from "@re
 
 // Google Maps libraries - using places for autocomplete
 const MAP_LIBRARIES: ("places" | "geometry")[] = ["places", "geometry"];
-const DEFAULT_ORIGIN = "Santiago, Chile";
 
 const mapContainerStyle = {
   width: "100%",

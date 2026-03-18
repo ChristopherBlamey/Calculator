@@ -61,7 +61,7 @@ export default function TermsPage() {
               <ul className="list-disc list-inside space-y-2 ml-2">
                 <li>El código fuente, diseño y arquitectura del ERP</li>
                 <li>Los ingredientes y productos base compartidos</li>
-                <li>El nombre "Blamey" y связанные marcas</li>
+                <li>El nombre &quot;Blamey&quot; y demás marcas</li>
                 <li>La documentación y manuales</li>
               </ul>
               <p className="mt-3">
@@ -77,7 +77,7 @@ export default function TermsPage() {
             </h2>
             <div className="text-white/70 space-y-3 leading-relaxed">
               <p>
-                Blamey ERP se proporciona "tal cual" sin garantías de ningún tipo:
+                Blamey ERP se proporciona &quot;tal cual&quot; sin garantías de ningún tipo:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-2">
                 <li>

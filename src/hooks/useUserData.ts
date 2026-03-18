@@ -1,7 +1,7 @@
 "use client";
 
 import { supabase } from "@/lib/supabase";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import type { User } from "@supabase/supabase-js";
 
@@ -81,6 +81,21 @@ export function useUserData(): UseUserDataReturn {
   const [ingredientUser, setIngredientUser] = useState<IngredientUser[]>([]);
   const [productUser, setProductUser] = useState<ProductUser[]>([]);
   const [userPrices, setUserPrices] = useState<UserPrices[]>([]);
+  
+  // Ref para cancelar peticiones anteriores
+  const abortControllersRef = useRef<AbortController[]>([]);
+
+  // Limpiar errores al desmontar
+  useEffect(() => {
+    return () => {
+      abortControllersRef.current.forEach(controller => controller.abort());
+    };
+  }, []);
+
+  // Limpiar error cuando cambia el usuario
+  useEffect(() => {
+    setError(null);
+  }, [user]);
 
   const fetchBaseData = useCallback(async () => {
     try {
