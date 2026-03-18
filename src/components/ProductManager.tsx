@@ -16,6 +16,8 @@ export function ProductManager() {
   const { 
     ingredientBase, 
     productBase,
+    ingredientUser,
+    productUser,
     loading, 
     error,
     fetchAllData,
@@ -124,20 +126,34 @@ export function ProductManager() {
     if (!newProduct.name.trim()) return;
     setSaving(true);
     try {
-      const result = await addProductUser({
-        name: newProduct.name,
-        price: newProduct.price,
-        ingredients: newProduct.ingredients,
-        category: newProduct.type,
-        variant: newProduct.variant,
-      });
-      if (result) {
-        setNewProduct({ name: "", type: "custom", variant: "", price: 0, ingredients: [] });
-        setShowProductForm(false);
-        showMessage("success", "Producto agregado");
+      if (editingId) {
+        // Update existing product
+        await updateProductUser(editingId, {
+          name: newProduct.name,
+          price: newProduct.price,
+          ingredients: newProduct.ingredients,
+          category: newProduct.type,
+          variant: newProduct.variant,
+        });
+        showMessage("success", "Producto actualizado");
+      } else {
+        // Add new product
+        const result = await addProductUser({
+          name: newProduct.name,
+          price: newProduct.price,
+          ingredients: newProduct.ingredients,
+          category: newProduct.type,
+          variant: newProduct.variant,
+        });
+        if (result) {
+          showMessage("success", "Producto agregado");
+        }
       }
+      setNewProduct({ name: "", type: "custom", variant: "", price: 0, ingredients: [] });
+      setEditingId(null);
+      setShowProductForm(false);
     } catch (error) {
-      showMessage("error", "Error al agregar");
+      showMessage("error", "Error al guardar");
     } finally {
       setSaving(false);
     }
@@ -345,7 +361,8 @@ export function ProductManager() {
           {showProductForm && (
             <div className="glass-card p-4 space-y-4 border border-wanda-pink/50">
               <h3 className="font-bold text-white flex items-center gap-2">
-                <FlaskConical className="w-5 h-5 text-wanda-pink" /> Nuevo Producto
+                <FlaskConical className="w-5 h-5 text-wanda-pink" /> 
+                {editingId ? "Editar Producto" : "Nuevo Producto"}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <input type="text" placeholder="Nombre (ej: Empanada)" value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} className="bg-black/40 border border-white/20 rounded-xl px-4 py-2 text-white lg:col-span-2" />
@@ -354,7 +371,7 @@ export function ProductManager() {
                   <button onClick={handleAddProduct} disabled={saving || !newProduct.name.trim()} className="flex-1 flex items-center justify-center gap-1 bg-cosmo-green text-black font-bold py-2 rounded-xl disabled:opacity-50">
                     <Save className="w-4 h-4" />
                   </button>
-                  <button onClick={() => { setShowProductForm(false); setNewProduct({ name: "", type: "custom", variant: "", price: 0, ingredients: [] }); }} className="px-3 py-2 bg-white/10 text-white rounded-xl">
+                  <button onClick={() => { setShowProductForm(false); setNewProduct({ name: "", type: "custom", variant: "", price: 0, ingredients: [] }); setEditingId(null); }} className="px-3 py-2 bg-white/10 text-white rounded-xl">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -387,6 +404,48 @@ export function ProductManager() {
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* User Products - Mis Productos */}
+          {productUser.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-bold text-cosmo-green text-sm">Mis Productos</h3>
+              <div className="grid gap-2">
+                {productUser.map((prod) => (
+                  <div key={prod.id} className="glass-card p-3 flex items-center justify-between bg-cosmo-green/5 border border-cosmo-green/20">
+                    <div className="flex-1">
+                      <p className="font-bold text-white">{prod.name}</p>
+                      <p className="text-xs text-white/40">${prod.price?.toLocaleString("es-CL")} • {prod.ingredients?.length || 0} ingredientes</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button 
+                        onClick={() => {
+                          // Edit product - set form values
+                          setNewProduct({
+                            name: prod.name,
+                            type: prod.category || "custom",
+                            variant: prod.variant || "",
+                            price: prod.price || 0,
+                            ingredients: prod.ingredients || []
+                          });
+                          setEditingId(prod.id);
+                          setShowProductForm(true);
+                        }}
+                        className="p-2 bg-wanda-pink/20 text-wanda-pink rounded-lg hover:bg-wanda-pink/30"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteProduct(prod.id)}
+                        className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

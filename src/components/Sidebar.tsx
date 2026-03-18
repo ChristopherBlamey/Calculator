@@ -52,10 +52,10 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button - Higher z-index and better positioning */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-[60] md:hidden bg-wanda-pink text-white p-3 rounded-xl shadow-lg"
+        className="fixed top-3 left-3 z-[9999] md:hidden bg-wanda-pink text-white p-2.5 rounded-lg shadow-lg active:scale-95 transition-transform"
       >
         <Menu className="w-6 h-6" />
       </button>
@@ -63,7 +63,7 @@ export function Sidebar() {
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 z-[55] md:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-[9998] md:hidden backdrop-blur-sm"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -159,7 +159,7 @@ export function Sidebar() {
 
       {/* Mobile Drawer */}
       <div className={`
-        fixed top-0 left-0 h-full w-80 max-w-[85vw] z-[60]
+        fixed top-0 left-0 h-full w-80 max-w-[85vw] z-[9999]
         bg-black/95 backdrop-blur-xl border-r border-white/10
         transform transition-transform duration-300 ease-in-out
         md:hidden

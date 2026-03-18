@@ -170,22 +170,35 @@ export default function ERPPage() {
     }
   }, [user, fetchAllData]);
 
-  // Prevenir navegación hacia atrás - siempre redirigir al ERP
+  // Prevenir navegación hacia atrás - manejar según estado de sesión
   useEffect(() => {
+    // Si no hay usuario y no está cargando, redirigir al landing
+    if (!authLoading && !user) {
+      window.location.href = '/';
+      return;
+    }
+
     const handlePopState = (event: PopStateEvent) => {
-      // Siempre ir al dashboard si hay un usuario
       if (user) {
+        // Si hay usuario logueado, siempre ir al ERP (dashboard)
         window.history.pushState(null, "", "/erp");
+      } else {
+        // Si no hay usuario, ir al landing
+        window.location.href = '/';
       }
     };
 
-    window.history.pushState(null, "", "/erp");
+    // Siempre aseguramos que la URL sea /erp mientras haya sesión
+    if (user) {
+      window.history.pushState(null, "", "/erp");
+    }
+    
     window.addEventListener("popstate", handlePopState);
     
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [user]);
+  }, [user, authLoading]);
 
   // Si no está logueado, redirigir al landing
   useEffect(() => {

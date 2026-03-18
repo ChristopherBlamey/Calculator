@@ -17,30 +17,35 @@
 }
 
 :root {
-  /* Global Theme Variables - LIGHT MODE */
-  --background: #f8f9fa;
+  /* Global Theme Variables - LIGHT MODE - MEJORADO */
+  --background: #ffffff;
   --foreground: #1a1a2e;
   
-  /* Cosmo & Wanda palette */
+  /* Cosmo & Wanda palette - Mas vibrantes para light mode */
   --cosmo: #00C853;
-  --cosmo-light: #69F0AE;
+  --cosmo-light: #4ADE80;
   --wanda: #FF69B4;
   --wanda-pink: #E91E8C;
   --wanda-light: #FF85C1;
   
-  /* Glass - Light mode */
-  --glass-bg: rgba(255, 255, 255, 0.9);
-  --glass-border: rgba(0, 0, 0, 0.15);
+  /* Glass - Light mode - Mas opaco para legibilidad */
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(0, 0, 0, 0.12);
   --glass-bg-solid: rgba(255, 255, 255, 0.98);
   
-  --bg-gradient-1: #e9ecef;
-  --bg-gradient-2: #f8f9fa;
-  --bg-gradient-3: #e0e4e8;
+  --bg-gradient-1: #ffffff;
+  --bg-gradient-2: #f8fafc;
+  --bg-gradient-3: #f1f5f9;
   
-  /* Text colors - Light mode */
-  --text-primary: #1a1a2e;
-  --text-secondary: #4a4a5a;
-  --text-muted: #6b7280;
+  /* Text colors - Light mode - MEJOR CONTRASTE */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  
+  /* Input backgrounds - Light mode */
+  --input-bg: rgba(0, 0, 0, 0.05);
+  --input-border: rgba(0, 0, 0, 0.15);
+  --input-text: #0f172a;
 }
 
 .dark {
@@ -67,6 +72,11 @@
   --text-primary: #ffffff;
   --text-secondary: #e2e8f0;
   --text-muted: #94a3b8;
+  
+  /* Input backgrounds - Dark mode */
+  --input-bg: rgba(255, 255, 255, 0.1);
+  --input-border: rgba(255, 255, 255, 0.2);
+  --input-text: #ffffff;
 }
 
 @layer base {
@@ -146,13 +156,13 @@
 
 /* ===== Inputs - MEJOR CONTRASTE ===== */
 input, select, textarea {
-  background: rgba(0, 0, 0, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  color: var(--input-text) !important;
 }
 
 input::placeholder, textarea::placeholder {
-  color: rgba(255, 255, 255, 0.4) !important;
+  color: var(--text-muted) !important;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -162,9 +172,14 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Select dropdown options */
-select option {
+.dark select option {
   background: #1a1a2e !important;
   color: #ffffff !important;
+}
+
+select option {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
 }
 
 /* ===== Botones - REDISEÑO ===== */
@@ -436,17 +451,125 @@ table {
   border-spacing: 0;
 }
 
-th {
+.dark th {
   background: rgba(0, 0, 0, 0.3) !important;
+}
+
+th {
+  background: rgba(0, 0, 0, 0.05) !important;
   color: var(--text-primary) !important;
   font-weight: 600;
 }
 
 td {
   background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark td {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 tr:hover td {
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.dark tr:hover td {
   background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ===== Mobile Optimizations ===== */
+@media (max-width: 768px) {
+  /* Better touch targets */
+  button, 
+  .glass-card,
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Full width on mobile with padding */
+  .max-w-4xl {
+    max-width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  /* Mobile-friendly cards */
+  .glass-card {
+    border-radius: 12px !important;
+    margin-left: -4px;
+    margin-right: -4px;
+  }
+  
+  /* Better text readability on mobile */
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  h1, h2, h3 {
+    word-break: break-word;
+  }
+  
+  /* Touch-friendly spacing */
+  .space-y-4 > * + * {
+    margin-top: 12px;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 16px;
+  }
+  
+  /* Grid to single column on mobile */
+  .grid {
+    gap: 12px !important;
+  }
+  
+  /* Input fields larger on mobile */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 48px;
+  }
+  
+  /* Button padding for touch */
+  button {
+    padding: 12px 16px;
+  }
+  
+  /* Full width buttons on mobile */
+  button.w-full {
+    width: 100%;
+  }
+  
+  /* Sidebar mobile adjustments */
+  .md\:ml-64 {
+    margin-left: 0 !important;
+  }
+  
+  /* Header/footer mobile */
+  header, footer {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* ===== Safe area for notched phones ===== */
+@supports (padding: max(0px)) {
+  .pb-24 {
+    padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ===== Prevent pull-to-refresh and overscroll ===== */
+html, body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
