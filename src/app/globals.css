@@ -19,48 +19,45 @@
 /* ===== LIGHT MODE (Default) ===== */
 :root {
   --background: #ffffff;
-  --foreground: #111827;
+  --foreground: #1a1a2e;
   
-  /* Cosmo & Wanda - Modo claro con buen contraste */
-  --cosmo: #16a34a;      /* Verde 600 */
-  --cosmo-light: #4ade80; /* Verde 400 */
-  --wanda: #db2777;      /* Rosa 600 */
-  --wanda-pink: #be185d; /* Rosa 700 */
-  --wanda-light: #f472b6;
+  /* Cosmo & Wanda - Colors that work in light */
+  --cosmo: #00c853;
+  --cosmo-light: #69f0ae;
+  --wanda: #e91e8c;
+  --wanda-pink: #c2185b;
+  --wanda-light: #ff69b4;
   
-  /* Glass - Sólido para legibilidad */
+  /* Glass */
   --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-border: rgba(0, 0, 0, 0.08);
   --glass-bg-solid: #ffffff;
   
   --bg-gradient-1: #ffffff;
-  --bg-gradient-2: #f9fafb;
-  --bg-gradient-3: #f3f4f6;
+  --bg-gradient-2: #f5f5f5;
+  --bg-gradient-3: #eeeeee;
   
-  /* Text - Alto contraste */
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
+  /* Text */
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a5e;
+  --text-muted: #888899;
   
   /* Input */
-  --input-bg: #f3f4f6;
-  --input-border: #d1d5db;
-  --input-text: #111827;
+  --input-bg: #f0f0f5;
+  --input-border: #d0d0d8;
+  --input-text: #1a1a2e;
   
   /* Header/Footer */
   --header-bg: #ffffff;
-  --footer-bg: #f9fafb;
-  
-  /* Cosmo variable */
-  --cosmo-green: #16a34a;
+  --footer-bg: #fafafa;
 }
 
 /* ===== DARK MODE ===== */
 .dark {
-  --background: #0f0f14;
-  --foreground: #f9fafb;
+  --background: #0a0a14;
+  --foreground: #ffffff;
   
-  /* Cosmo & Wanda - Neon para modo oscuro */
+  /* Cosmo & Wanda - Neon */
   --cosmo: #7fff00;
   --cosmo-light: #b2ff59;
   --wanda: #ff69b4;
@@ -68,30 +65,27 @@
   --wanda-light: #ff85c1;
   
   /* Glass */
-  --glass-bg: rgba(30, 30, 45, 0.9);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-bg-solid: #1a1a28;
+  --glass-bg: rgba(25, 25, 40, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg-solid: #12121f;
   
-  --bg-gradient-1: #0f0f14;
-  --bg-gradient-2: #15151f;
-  --bg-gradient-3: #0a0a10;
+  --bg-gradient-1: #0a0a14;
+  --bg-gradient-2: #12121f;
+  --bg-gradient-3: #08080f;
   
   /* Text */
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
+  --text-primary: #ffffff;
+  --text-secondary: #d0d0e0;
+  --text-muted: #8888aa;
   
   /* Input */
-  --input-bg: rgba(255, 255, 255, 0.08);
-  --input-border: rgba(255, 255, 255, 0.15);
-  --input-text: #f9fafb;
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-text: #ffffff;
   
   /* Header/Footer */
-  --header-bg: rgba(15, 15, 20, 0.95);
-  --footer-bg: rgba(15, 15, 20, 0.95);
-  
-  /* Cosmo variable */
-  --cosmo-green: #7fff00;
+  --header-bg: rgba(10, 10, 20, 0.95);
+  --footer-bg: rgba(10, 10, 20, 0.95);
 }
 
 @layer base {
@@ -100,14 +94,14 @@
   }
   body {
     @apply bg-[var(--background)] text-[var(--foreground)];
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 /* ===== Background ===== */
 .cw-bg {
-  background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+  background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 60%, var(--bg-gradient-3) 100%);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -116,27 +110,58 @@
 /* ===== Glass Card ===== */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  transition: all 0.3s ease;
+  border-radius: 16px;
+  transition: all 0.2s ease;
 }
 
 .glass-card:hover {
   background: var(--glass-bg-solid);
+  border-color: var(--cosmo);
 }
 
-/* ===== Text Colors ===== */
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-muted { color: var(--text-muted); }
+/* ===== Text Colors - Force apply ===== */
+.text-white,
+.text-\[var\(--text-primary\)\],
+.text-\[var\(--text-secondary\)\] {
+  color: var(--text-primary) !important;
+}
+
+.text-white\/60,
+.text-white\/40,
+.text-white\/70,
+.text-\[var\(--text-muted\)\] {
+  color: var(--text-muted) !important;
+}
+
+/* ===== Backgrounds ===== */
+.bg-black\/90,
+.bg-black\/80 {
+  background: var(--header-bg) !important;
+}
+
+.bg-black\/40 {
+  background: var(--input-bg) !important;
+}
+
+.bg-black\/20 {
+  background: var(--glass-bg) !important;
+}
+
+/* ===== Borders ===== */
+.border-white\/10,
+.border-white\/20 {
+  border-color: var(--glass-border) !important;
+}
 
 /* ===== Inputs ===== */
 input, select, textarea {
   background: var(--input-bg) !important;
   border: 1px solid var(--input-border) !important;
   color: var(--input-text) !important;
+  border-radius: 12px !important;
 }
 
 input::placeholder, textarea::placeholder {
@@ -146,28 +171,35 @@ input::placeholder, textarea::placeholder {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--wanda-pink) !important;
-  box-shadow: 0 0 0 2px rgba(233, 30, 140, 0.2) !important;
+  box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.15) !important;
 }
 
-/* ===== Buttons ===== */
-.btn-primary, .bg-wanda-pink, .bg-wanda {
+/* ===== Buttons - Primary (Wanda) ===== */
+.bg-wanda-pink,
+.bg-wanda,
+.btn-primary {
   background: var(--wanda-pink) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
 }
 
-.btn-primary:hover, .bg-wanda-pink:hover {
+.bg-wanda-pink:hover {
   background: var(--wanda) !important;
+  box-shadow: 0 4px 20px rgba(233, 30, 140, 0.3) !important;
 }
 
-.btn-secondary, .bg-cosmo, .bg-cosmo-green {
+/* ===== Buttons - Secondary (Cosmo) ===== */
+.bg-cosmo,
+.bg-cosmo-green,
+.btn-secondary {
   background: var(--cosmo) !important;
   color: #000000 !important;
   font-weight: 700 !important;
 }
 
-.btn-secondary:hover {
+.bg-cosmo:hover {
   background: var(--cosmo-light) !important;
+  box-shadow: 0 4px 20px rgba(127, 255, 0, 0.3) !important;
 }
 
 /* ===== Header/Footer ===== */
@@ -179,7 +211,7 @@ header, footer {
 /* ===== Mobile Optimizations ===== */
 @media (max-width: 768px) {
   .glass-card {
-    border-radius: 16px !important;
+    border-radius: 14px !important;
     margin: 0 !important;
   }
   
@@ -191,12 +223,16 @@ header, footer {
     min-height: calc(100vh - 56px) !important;
     padding-bottom: 100px !important;
   }
+  
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
 /* ===== Safe areas ===== */
 @supports (padding: max(0px)) {
   .pb-24 {
-    padding-bottom: max(80px, env(safe-area-inset-bottom)) !important;
+    padding-bottom: max(100px, env(safe-area-inset-bottom)) !important;
   }
   
   .pt-14 {
@@ -210,7 +246,7 @@ header, footer {
 
 /* ===== Scrollbar ===== */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -227,5 +263,5 @@ header, footer {
 }
 
 .animate-slide-up {
-  animation: slideUp 0.4s ease-out forwards;
+  animation: slideUp 0.3s ease-out forwards;
 }

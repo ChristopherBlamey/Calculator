@@ -9,6 +9,7 @@ interface ProductCardProps {
   variantLabel: string;
   categoryLabel: string;
   emoji: string;
+  price?: number;
   onEdit?: () => void;
 }
 
@@ -18,6 +19,7 @@ export function ProductCard({
   variantLabel,
   categoryLabel,
   emoji,
+  price,
   onEdit,
 }: ProductCardProps) {
   const quantity =
@@ -38,11 +40,11 @@ export function ProductCard({
   return (
     <div
       className={`
-        group relative rounded-2xl p-4 transition-all duration-300 cursor-default
+        group relative rounded-2xl p-3 transition-all duration-300 cursor-default
         ${
           isActive
-            ? "bg-linear-to-br from-[#E91E8C]/10 to-[#00C853]/10 border border-[#E91E8C]/30 shadow-lg shadow-[#E91E8C]/10 scale-[1.02]"
-            : "glass-card hover:border-white/10 hover:bg-white/5"
+            ? "bg-wanda-pink/10 border-2 border-wanda-pink/30 shadow-lg shadow-wanda-pink/10 scale-[1.02]"
+            : "glass-card hover:border-[var(--cosmo)]"
         }
       `}
     >
@@ -53,8 +55,8 @@ export function ProductCard({
             e.stopPropagation();
             onEdit();
           }}
-          className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/10 text-white/60 hover:bg-wanda-pink hover:text-white transition-colors opacity-0 group-hover:opacity-100"
-          title="Editar receta"
+          className="absolute top-2 right-2 p-1.5 rounded-lg bg-[var(--input-bg)] text-[var(--text-muted)] hover:bg-wanda-pink hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+          title="Editar"
         >
           <Edit3 className="w-4 h-4" />
         </button>
@@ -62,32 +64,34 @@ export function ProductCard({
 
       {/* Active quantity badge */}
       {isActive && (
-        <div className="absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-[#E91E8C] to-[#FF6EB9] text-xs font-bold text-white shadow-lg shadow-[#E91E8C]/30 animate-slide-up">
+        <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-wanda-pink text-xs font-bold text-white shadow-lg animate-slide-up">
           {quantity}
         </div>
       )}
 
       {/* Emoji & Title */}
-      <div className="mb-3 flex items-center gap-2.5">
-        <span className="text-3xl drop-shadow-lg transition-transform duration-300 group-hover:scale-110">
+      <div className="mb-2 flex items-center gap-2">
+        <span className="text-2xl">
           {emoji}
         </span>
-        <div>
-          <h3 className="text-sm font-bold text-white leading-tight">
-            {categoryLabel}
-          </h3>
-          <p className={`text-xs font-semibold ${isActive ? "text-[#FF6EB9]" : "text-[#69F0AE]"}`}>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-bold text-[var(--text-primary)] truncate">
             {variantLabel}
-          </p>
+          </h3>
+          {price && (
+            <p className="text-xs font-semibold text-[var(--cosmo)]">
+              ${price.toLocaleString("es-CL")}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Quantity Stepper */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <button
           onClick={decrement}
           disabled={quantity <= 0}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-wanda text-black text-2xl font-black shadow-[0_0_10px_var(--wanda)] transition-all hover:shadow-[0_0_20px_var(--wanda)] disabled:opacity-20 disabled:cursor-not-allowed disabled:shadow-none active:scale-90"
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-wanda-pink text-white font-bold text-xl transition-all hover:opacity-80 disabled:opacity-30 disabled:cursor-not-allowed active:scale-90"
           aria-label="Decrease"
         >
           −
@@ -97,11 +101,11 @@ export function ProductCard({
           min={0}
           value={quantity}
           onChange={(e) => handleInput(e.target.value)}
-          className="h-10 w-14 rounded-xl bg-black/40 border-2 border-white/10 text-center text-lg font-bold text-white focus:border-wanda focus:ring-2 focus:ring-(--wanda)/20 focus:outline-none transition-all"
+          className="h-9 flex-1 rounded-xl bg-[var(--input-bg)] border border-[var(--input-border)] text-center text-base font-bold text-[var(--text-primary)] focus:border-wanda-pink focus:outline-none"
         />
         <button
           onClick={increment}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-cosmo text-black text-2xl font-black shadow-[0_0_10px_var(--cosmo)] transition-all hover:shadow-[0_0_20px_var(--cosmo)] active:scale-90"
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--cosmo)] text-black font-bold text-xl transition-all hover:opacity-80 active:scale-90"
           aria-label="Increase"
         >
           +

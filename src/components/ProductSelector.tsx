@@ -1,16 +1,28 @@
 "use client";
 
-import { PRODUCT_CATEGORIES } from "@/data/recipes";
+import { useEffect, useState, useMemo } from "react";
 import { ProductCard } from "./ProductCard";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { useEventStore } from "@/store/useEventStore";
-import { useState } from "react";
-import { PartyPopper, CalendarCheck, AlertTriangle } from "lucide-react";
+import { useUserData } from "@/hooks/useUserData";
+import { useAuth } from "@/hooks/useAuth";
+import { PartyPopper, AlertTriangle, Package, Plus, Loader2 } from "lucide-react";
 import { ProductType } from "@/types";
 import { calculateTotals } from "@/lib/calculator";
-import { INGREDIENTS } from "@/data/recipes";
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  hotdog: "🌭",
+  churrasco: "🥩",
+  hamburguesa: "🍔",
+  empanada: "🥟",
+  bebida: "🥤",
+  producto: "📦",
+};
 
 export function ProductSelector() {
+  const { user } = useAuth();
+  const { productUser, ingredientBase, fetchAllData, loading: dataLoading } = useUserData();
+  
   const totalItems = useCalculatorStore((s) =>
     s.selections.reduce((sum, sel) => sum + sel.quantity, 0)
   );
@@ -25,18 +37,37 @@ export function ProductSelector() {
   const [showToast, setShowToast] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (user) {
+      fetchAllData();
+    }
+  }, [user, fetchAllData]);
+
+  // Group products by category
+  const productsByCategory = useMemo(() => {
+    const grouped: Record<string, typeof productUser> = {};
+    
+    productUser.forEach(prod => {
+      const cat = prod.category || 'producto';
+      if (!grouped[cat]) {
+        grouped[cat] = [];
+      }
+      grouped[cat].push(prod);
+    });
+    
+    return grouped;
+  }, [productUser]);
+
   const handleAddToEvent = () => {
     if (selections.length === 0) return;
     
-    // Valiudate prices
     const totals = calculateTotals(selections, overrides);
     const missingPrices: string[] = [];
     
     totals.forEach(t => {
       const priceVal = prices[t.id]?.price;
       if (!priceVal || priceVal <= 0) {
-        const ingName = INGREDIENTS.find(i => i.id === t.id)?.name || t.id;
-        missingPrices.push(ingName);
+        missingPrices.push(t.id);
       }
     });
 
@@ -47,17 +78,14 @@ export function ProductSelector() {
     }
 
     selections.forEach(sel => {
-      // In a real app, prices would come from a DB or Store. 
-      // For V1.1 ERP Demo we set a flat estimate.
-      const estimatedPrice = sel.product === "completo" ? 2500 : 
-                             sel.product === "hamburguesa" ? 4500 : 
-                             sel.product === "churrasco" ? 5500 : 5000;
-                             
+      const prod = productUser.find(p => p.name.toLowerCase().includes(sel.product.toLowerCase()));
+      const unitPrice = prod?.price || 2500;
+                              
       addSoldItem({
         product: sel.product as ProductType,
         variant: sel.variant,
         quantity: sel.quantity,
-        unitPrice: estimatedPrice
+        unitPrice
       });
     });
     
@@ -68,96 +96,89 @@ export function ProductSelector() {
     }, 2000);
   };
 
+  if (dataLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-wanda-pink" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8 pb-36">
+    <div className="space-y-6 pb-36">
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-slide-up bg-cosmo-green text-black px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-2 border border-[#69F0AE] min-w-[300px] justify-center">
-          <PartyPopper className="w-5 h-5 text-black" />
-          ¡Añadido al Evento Actual!
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up bg-[var(--cosmo)] text-black px-6 py-3 rounded-full font-bold shadow-xl flex items-center gap-2 min-w-[280px] justify-center">
+          <PartyPopper className="w-5 h-5" />
+          ¡Añadido al Evento!
         </div>
       )}
 
-      {/* Error Toast */}
       {errorMsg && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 animate-slide-up bg-black/90 text-wanda-pink-light border border-wanda-pink px-6 py-4 rounded-2xl font-bold shadow-[0_0_30px_rgba(255,105,180,0.3)] flex items-center gap-3 backdrop-blur-xl w-[90%] md:w-auto text-sm md:text-base text-center">
-          <AlertTriangle className="w-6 h-6 shrink-0 text-wanda-pink" />
-          <span>{errorMsg}</span>
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-up bg-red-500 text-white px-6 py-3 rounded-xl font-bold shadow-xl flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5" />
+          {errorMsg}
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-extrabold tracking-tight">
-            ¿Qué vas a preparar? <span className="text-wanda-pink">🔥</span>
-          </h2>
-          <p className="text-sm opacity-60 mt-1">
-            {totalItems > 0
-              ? `${totalItems} producto${totalItems === 1 ? "" : "s"} seleccionado${totalItems === 1 ? "" : "s"}`
-              : "Elige la cantidad de cada producto"}
+      {/* Products Grid by Category */}
+      {Object.keys(productsByCategory).length === 0 ? (
+        <div className="glass-card p-8 text-center">
+          <Package className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
+          <p className="text-[var(--text-muted)] mb-4">
+            No hay productos creados aún.
           </p>
-        </div>
-        {totalItems > 0 && (
           <button
-            onClick={resetSelections}
-            className="rounded-xl border border-wanda-pink/30 bg-wanda-pink/10 px-4 py-2 text-xs font-bold text-wanda-pink transition-all hover:bg-wanda-pink/20 active:scale-95"
+            onClick={() => setActiveTab("productos_admin")}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-wanda-pink text-white font-bold rounded-xl"
           >
-            Limpiar ✕
+            <Plus className="w-4 h-4" /> Crear Producto
           </button>
-        )}
-      </div>
-
-      {/* Product Categories */}
-      {PRODUCT_CATEGORIES.map((cat, catIdx) => (
-        <div key={cat.type} className="animate-slide-up" style={{ animationDelay: `${catIdx * 80}ms` }}>
-          <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] opacity-40">
-            <span className="text-base">{cat.emoji}</span>
-            {cat.label}s
-            <div className="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent ml-2" />
-          </h3>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {cat.variants.map((v) => (
-              <ProductCard
-                key={`${cat.type}_${v.key}`}
-                product={cat.type}
-                variant={v.key}
-                variantLabel={v.label}
-                categoryLabel={cat.label}
-                emoji={cat.emoji}
-                onEdit={() => {
-                  setEditingProduct(`${cat.type}_${v.key}`);
-                  setActiveTab("recetas");
-                }}
-              />
-            ))}
-          </div>
         </div>
-      ))}
+      ) : (
+        Object.entries(productsByCategory).map(([category, products]) => (
+          <div key={category} className="space-y-3">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
+              <span className="text-2xl">{CATEGORY_EMOJI[category] || "📦"}</span>
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+              <span className="text-sm font-normal text-[var(--text-muted)]">
+                ({products.length})
+              </span>
+            </h3>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {products.map((prod) => (
+                <ProductCard
+                  key={prod.id}
+                  product={prod.name.toLowerCase().replace(/\s+/g, "_")}
+                  variant={prod.variant || prod.id.slice(0, 8)}
+                  variantLabel={prod.name}
+                  categoryLabel={category}
+                  emoji={CATEGORY_EMOJI[category] || "📦"}
+                  price={prod.price}
+                  onEdit={() => {
+                    setEditingProduct(`${prod.name.toLowerCase().replace(/\s+/g, "_")}_${prod.id.slice(0, 8)}`);
+                    setActiveTab("recetas");
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        ))
+      )}
 
-      {/* Floating Action Buttons */}
+      {/* Add to Event Button */}
       {totalItems > 0 && (
-        <div className="fixed bottom-6 left-0 right-0 z-50 flex flex-col md:flex-row justify-center gap-4 px-4 animate-slide-up">
+        <div className="fixed bottom-24 left-4 right-4 md:left-64 md:right-4 z-30">
           <button
             onClick={handleAddToEvent}
-            className="pulse-ring relative flex items-center justify-center gap-3 rounded-2xl bg-[#0f0f0f] border-2 border-wanda px-8 py-4 text-base font-black text-wanda shadow-[0_0_20px_rgba(255,105,180,0.4)] transition-all duration-300 hover:scale-[1.02] hover:bg-wanda-pink/20 hover:text-white hover:shadow-[0_0_40px_rgba(255,105,180,0.8)] active:scale-95 order-2 md:order-1 group"
+            className="w-full py-4 bg-wanda-pink text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
           >
-            <CalendarCheck className="w-5 h-5 group-hover:text-wanda-pink-light transition-colors" />
-            <span>Registrar Venta (Evento)</span>
-          </button>
-          
-          <button
-            onClick={() => setActiveTab("resultados")}
-            className="relative flex items-center justify-center gap-3 rounded-2xl bg-[#0f0f0f] border-2 border-cosmo px-8 py-4 text-base font-black text-cosmo shadow-[0_0_20px_rgba(127,255,0,0.4)] transition-all duration-300 hover:scale-[1.02] hover:bg-cosmo-green/20 hover:text-white hover:shadow-[0_0_40px_rgba(127,255,0,0.8)] active:scale-95 order-1 md:order-2 group"
-          >
-            <span>Calcular Ingredientes</span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cosmo-green/20 text-sm font-black text-white group-hover:bg-cosmo-green/40 transition-colors border border-cosmo-green/30">
-              {totalItems}
-            </span>
+            <PartyPopper className="w-6 h-6" />
+            Agregar {totalItems} {totalItems === 1 ? "producto" : "productos"} al Evento
           </button>
         </div>
       )}
     </div>
   );
 }
-

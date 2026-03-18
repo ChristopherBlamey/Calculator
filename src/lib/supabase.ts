@@ -17,6 +17,7 @@ export function getSupabaseClient(): SupabaseClient {
         autoRefreshToken: true,
         detectSessionInUrl: true,
         storageKey: STORAGE_KEY,
+        flowType: 'pkce',
         storage: {
           getItem: (key: string) => {
             try {
