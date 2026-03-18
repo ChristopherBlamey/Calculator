@@ -90,41 +90,63 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Smartap (Blamey ERP)",
+    "alternateName": ["Blamey ERP", "Calculadora de Comida Chilena"],
+    "description": "ERP gratuito y calculadora de comida para negocios de comida en Chile. Calcula ingredientes, costos, logística y ventas. 100% gratis.",
+    "url": "https://www.smartap.cl",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser, Android, iOS",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CLP",
+      "availability": "https://schema.org/InStock"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "Smartap",
+      "url": "https://www.smartap.cl",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "email": "contacto@smartap.cl"
+      }
+    },
+    "featureList": [
+      "Calculadora de ingredientes para completos, hamburguesas, empanadas",
+      "Control de inventario y materia prima",
+      "Gestión de eventos y ventas",
+      "Cálculo automático de costos de producción",
+      "Logística de delivery con Google Maps",
+      "Multi-usuario con Google Auth",
+      "Generación de listas de compras",
+      "Presupuestos en PDF"
+    ],
+    "screenshot": "https://www.smartap.cl/og-image.png",
+    "softwareVersion": "1.8",
+    "datePublished": "2024-01-01",
+    "inLanguage": ["es", "es-CL"],
+    "country": "Chile",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Chile"
+    },
+    "potentialAction": {
+      "@type": "UseAction",
+      "target": "https://www.smartap.cl"
+    }
+  };
+
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": "Smartap",
-              "alternateName": "Smartap ERP",
-              "description": "Calculadora de comida y ERP gratuito para negocios de comida en Chile",
-              "url": "https://www.smartap.cl",
-              "applicationCategory": "BusinessApplication",
-              "operatingSystem": "Web Browser",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "CLP",
-                "availability": "https://schema.org/InStock"
-              },
-              "featureList": [
-                "Calculadora de ingredientes",
-                "Control de inventario",
-                "Gestión de eventos",
-                "Cálculo de costos",
-                "Logística de delivery",
-                "Multi-usuario"
-              ],
-              "author": {
-                "@type": "Organization",
-                "name": "Smartap",
-                "url": "https://www.smartap.cl"
-              }
-            }),
+            __html: JSON.stringify(structuredData),
           }}
         />
       </head>
