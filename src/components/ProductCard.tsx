@@ -1,6 +1,7 @@
 "use client";
 
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { Edit3 } from "lucide-react";
 
 interface ProductCardProps {
   product: string;
@@ -8,6 +9,7 @@ interface ProductCardProps {
   variantLabel: string;
   categoryLabel: string;
   emoji: string;
+  onEdit?: () => void;
 }
 
 export function ProductCard({
@@ -16,6 +18,7 @@ export function ProductCard({
   variantLabel,
   categoryLabel,
   emoji,
+  onEdit,
 }: ProductCardProps) {
   const quantity =
     useCalculatorStore((s) =>
@@ -43,6 +46,20 @@ export function ProductCard({
         }
       `}
     >
+      {/* Edit button - pencil icon */}
+      {onEdit && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+          className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/10 text-white/60 hover:bg-wanda-pink hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+          title="Editar receta"
+        >
+          <Edit3 className="w-4 h-4" />
+        </button>
+      )}
+
       {/* Active quantity badge */}
       {isActive && (
         <div className="absolute -top-2.5 -right-2.5 flex h-7 w-7 items-center justify-center rounded-full bg-linear-to-br from-[#E91E8C] to-[#FF6EB9] text-xs font-bold text-white shadow-lg shadow-[#E91E8C]/30 animate-slide-up">

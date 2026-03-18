@@ -124,6 +124,9 @@ export function ProductSelector() {
                 variantLabel={v.label}
                 categoryLabel={cat.label}
                 emoji={cat.emoji}
+                onEdit={() => {
+                  setActiveTab("recetas");
+                }}
               />
             ))}
           </div>

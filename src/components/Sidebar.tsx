@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { 
   Calculator, 
@@ -30,14 +31,20 @@ const TABS = [
   { id: "lista", label: "Lista", shortLabel: "Lista", icon: ShoppingCart },
   { id: "costos", label: "Finanzas", shortLabel: "Fin", icon: DollarSign },
   { id: "productos_admin", label: "Admin Prod.", shortLabel: "Adm", icon: Package },
-  { id: "admin", label: "Admin", shortLabel: "Sys", icon: Shield },
+  { id: "admin", label: "Admin", shortLabel: "Sys", icon: Shield, adminOnly: true },
 ];
 
+const ADMIN_EMAIL = "cristopher0915@gmail.com";
+
 export function Sidebar() {
+  const { user } = useAuth();
   const activeTab = useCalculatorStore((s) => s.activeTab);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  const visibleTabs = TABS.filter(t => !t.adminOnly || isAdmin);
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
@@ -109,7 +116,7 @@ export function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-1 px-3">
-            {TABS.map((tab) => {
+            {visibleTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               
@@ -183,7 +190,7 @@ export function Sidebar() {
         {/* Mobile Navigation */}
         <nav className="py-4">
           <ul className="space-y-1 px-3">
-            {TABS.map((tab) => {
+            {visibleTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               
