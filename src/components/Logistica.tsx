@@ -4,10 +4,11 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useEventStore } from "@/store/useEventStore";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown, Save, Loader2, Phone, MessageCircle } from "lucide-react";
+import { MapPin, Navigation, Fuel, Calculator, CheckCircle2, TrendingDown, Save, Loader2, Phone, MessageCircle, AlertTriangle } from "lucide-react";
 import { useJsApiLoader, GoogleMap, Autocomplete, DirectionsRenderer } from "@react-google-maps/api";
 
-const LIBRARIES: ("places")[] = ["places"];
+// Google Maps libraries - using places for autocomplete
+const MAP_LIBRARIES: ("places" | "geometry")[] = ["places", "geometry"];
 const DEFAULT_ORIGIN = "Santiago, Chile";
 
 const mapContainerStyle = {
@@ -59,9 +60,11 @@ export function Logistica() {
 
   const originDisplay = originAddress ? originAddress.split(',')[0] + (originAddress.split(',')[1] ? ',' + originAddress.split(',')[1] : '') : "No configurado";
   
+  // Enhanced Google Maps loader with places and geometry libraries
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: LIBRARIES,
+    libraries: MAP_LIBRARIES,
+    version: "weekly",
   });
 
   const [destination, setDestination] = useState("");
@@ -212,8 +215,35 @@ _Enviado desde Blamey ERP_`;
 
   if (loadError) {
     return (
-      <div className="p-8 text-center text-red-400 glass-card">
-        Error al cargar Google Maps. Verifica la API Key.
+      <div className="p-8 text-center glass-card space-y-4">
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-red-500/20 flex items-center justify-center">
+            <AlertTriangle className="w-8 h-8 text-red-400" />
+          </div>
+        </div>
+        <h3 className="text-xl font-bold text-white">Error al cargar Google Maps</h3>
+        <p className="text-white/60 text-sm">
+          Verifica que la API Key de Google Maps esté configurada correctamente en las variables de entorno.
+        </p>
+        <p className="text-white/40 text-xs">
+          Error: {loadError.message}
+        </p>
+      </div>
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+    return (
+      <div className="p-8 text-center glass-card space-y-4">
+        <div className="flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center">
+            <AlertTriangle className="w-8 h-8 text-yellow-400" />
+          </div>
+        </div>
+        <h3 className="text-xl font-bold text-white">Google Maps no configurado</h3>
+        <p className="text-white/60 text-sm">
+          La API Key de Google Maps no está configurada. Configura NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en tus variables de entorno.
+        </p>
       </div>
     );
   }
