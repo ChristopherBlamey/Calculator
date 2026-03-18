@@ -73,9 +73,39 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Root page - no cache (has auth state)
+      {
+        source: "/",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0",
+          },
+        ],
+      },
+      // ERP and Auth pages - no cache
+      {
+        source: "/erp",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0",
+          },
+        ],
+      },
+      {
+        source: "/auth/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0",
+          },
+        ],
+      },
+      // Static assets - longer cache
       // Static assets - longer cache
       {
-        source: "/:path*.(js|css|woff|woff2|ttf|eot)",
+        source: "/:path*.(js|css|woff|woff2|ttf|eot|svg|png|jpg|jpeg|gif|ico|webp|avif)",
         headers: [
           {
             key: "Cache-Control",
