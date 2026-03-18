@@ -17,27 +17,27 @@
 }
 
 :root {
-  /* Global Theme Variables - LIGHT MODE - MEJORADO */
-  --background: #ffffff;
-  --foreground: #1a1a2e;
+  /* Global Theme Variables - LIGHT MODE */
+  --background: #f8fafc;
+  --foreground: #0f172a;
   
   /* Cosmo & Wanda palette - Mas vibrantes para light mode */
-  --cosmo: #00C853;
-  --cosmo-light: #4ADE80;
-  --wanda: #FF69B4;
-  --wanda-pink: #E91E8C;
-  --wanda-light: #FF85C1;
+  --cosmo: #16a34a;
+  --cosmo-light: #22c55e;
+  --wanda: #db2777;
+  --wanda-pink: #be185d;
+  --wanda-light: #f472b6;
   
   /* Glass - Light mode - Mas opaco para legibilidad */
   --glass-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(0, 0, 0, 0.12);
+  --glass-border: rgba(0, 0, 0, 0.1);
   --glass-bg-solid: rgba(255, 255, 255, 0.98);
   
-  --bg-gradient-1: #ffffff;
-  --bg-gradient-2: #f8fafc;
-  --bg-gradient-3: #f1f5f9;
+  --bg-gradient-1: #f8fafc;
+  --bg-gradient-2: #f1f5f9;
+  --bg-gradient-3: #e2e8f0;
   
-  /* Text colors - Light mode - MEJOR CONTRASTE */
+  /* Text colors - Light mode - ALTO CONTRASTE para sol */
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-muted: #64748b;

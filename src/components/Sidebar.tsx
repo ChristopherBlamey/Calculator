@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
+import { useUnifiedStore } from "@/store/useUnifiedStore";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { 
@@ -19,7 +20,9 @@ import {
   Package,
   Shield,
   Home,
-  ArrowLeft
+  ArrowLeft,
+  Sun,
+  Moon
 } from "lucide-react";
 
 const TABS = [
@@ -41,6 +44,7 @@ export function Sidebar() {
   const { user } = useAuth();
   const activeTab = useCalculatorStore((s) => s.activeTab);
   const setActiveTab = useCalculatorStore((s) => s.setActiveTab);
+  const { theme, toggleTheme } = useUnifiedStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -88,6 +92,17 @@ export function Sidebar() {
 
         {/* Current section title */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            title={theme === "dark" ? "Modo Claro" : "Modo Oscuro"}
+          >
+            {theme === "dark" ? (
+              <Sun className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <Moon className="w-5 h-5 text-wanda-pink" />
+            )}
+          </button>
           <span className="text-white/60 text-sm hidden md:inline">{currentTab?.label}</span>
           <Link 
             href="/"

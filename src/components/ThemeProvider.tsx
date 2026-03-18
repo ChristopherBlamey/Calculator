@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useUnifiedStore } from "@/store/useUnifiedStore";
 
 type Theme = "dark" | "light";
 
@@ -12,12 +13,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const { theme: storeTheme, toggleTheme: storeToggleTheme } = useUnifiedStore();
   const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  // Sync with store
+  useEffect(() => {
+    setTheme(storeTheme);
+  }, [storeTheme]);
 
   useEffect(() => {
     // Check local storage or system preference on mount
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
+    const savedTheme = localStorage.getItem("blamey-theme") as Theme | null;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
     if (savedTheme) {
@@ -35,7 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     
     const handleChange = (e: MediaQueryListEvent) => {
-      const savedTheme = localStorage.getItem("theme");
+      const savedTheme = localStorage.getItem("blamey-theme");
       if (!savedTheme) {
         setTheme(e.matches ? "dark" : "light");
       }
@@ -55,11 +62,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.remove("dark");
     }
     
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("blamey-theme", theme);
   }, [theme, mounted]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    storeToggleTheme();
   };
 
   return (

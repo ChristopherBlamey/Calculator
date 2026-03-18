@@ -144,34 +144,17 @@ function TabContent() {
 }
 
 export default function ERPPage() {
-  const [mounted, setMounted] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return true;
-    }
-    return false;
-  });
+  const [mounted] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const { user, loading: authLoading } = useAuth();
-  const { fetchAllData } = useUserData();
+  const { fetchAllData, loading: dataLoading } = useUserData();
 
-  // Timeout para cargar - si tarda más de 10 segundos, mostrar error
+  // Cargar datos solo una vez cuando el usuario está disponible
   useEffect(() => {
-    if (authLoading) {
-      const timer = setTimeout(() => {
-        setLoadingTimeout(true);
-      }, 10000);
-      return () => clearTimeout(timer);
-    } else {
-      setLoadingTimeout(false);
-    }
-  }, [authLoading]);
-
-  useEffect(() => {
-    if (user) {
+    if (user && !dataLoading) {
       fetchAllData().catch(() => setLoadError(true));
     }
-  }, [user, fetchAllData]);
+  }, [user]); // Solo se ejecuta cuando user cambia
 
   // Prevenir navegación hacia atrás - manejar según estado de sesión
   useEffect(() => {
@@ -212,16 +195,13 @@ export default function ERPPage() {
 
   const handleRetry = useCallback(() => {
     setLoadError(false);
-    setLoadingTimeout(false);
     if (user) {
       fetchAllData().catch(() => setLoadError(true));
     }
   }, [user, fetchAllData]);
 
-  if (!mounted || authLoading) {
-    if (loadingTimeout && !user) {
-      return <ErrorScreen onRetry={handleRetry} />;
-    }
+  // Mostrar contenido directamente sin loading infinito
+  if (!user && authLoading) {
     return <LoadingScreen />;
   }
 
