@@ -6,10 +6,132 @@ import { useAuth } from "@/hooks/useAuth";
 import { 
   Package, Plus, Edit3, Save, X, Trash2, RefreshCw,
   ShoppingBag, AlertCircle, CheckCircle2, ChevronDown, ChevronUp, FlaskConical,
-  Copy, Loader2
+  Copy, Loader2, DollarSign, Calculator
 } from "lucide-react";
 
 interface ProductIngredient { ingredient_id: string; quantity: number; unit: string; }
+
+interface IngredientWithPrice {
+  id: string;
+  name: string;
+  unit: string;
+  cost_per_unit: number;
+  baseId?: string;
+  isBase?: boolean;
+}
+
+// Recetas Section with automatic cost calculation
+function RecetasSection({ 
+  ingredients, 
+  products, 
+  onUpdateProduct 
+}: { 
+  ingredients: IngredientWithPrice[];
+  products: ProductUser[];
+  onUpdateProduct: (id: string, data: Partial<ProductUser>) => Promise<void>;
+}) {
+  const [selectedProduct, setSelectedProduct] = useState<string>("");
+  
+  const calculateRecipeCost = (product: ProductUser): number => {
+    if (!product.ingredients || product.ingredients.length === 0) return 0;
+    
+    let totalCost = 0;
+    for (const ing of product.ingredients) {
+      const ingData = ingredients.find(i => i.baseId === ing.ingredient_id || i.id === ing.ingredient_id);
+      if (ingData) {
+        totalCost += (ingData.cost_per_unit || 0) * ing.quantity;
+      }
+    }
+    return totalCost;
+  };
+
+  const selectedProductData = products.find(p => p.id === selectedProduct);
+  const recipeCost = selectedProductData ? calculateRecipeCost(selectedProductData) : 0;
+  const profitMargin = selectedProductData?.price ? ((selectedProductData.price - recipeCost) / selectedProductData.price * 100) : 0;
+
+  return (
+    <div className="space-y-4">
+      <p className="text-white/60 text-sm">
+        Las recetas calculan automáticamente el costo de producción basado en los ingredientes.
+      </p>
+
+      {/* Select Product */}
+      <div className="glass-card p-4">
+        <label className="text-sm font-bold text-white/70 mb-2 block">Seleccionar Producto</label>
+        <select 
+          value={selectedProduct}
+          onChange={(e) => setSelectedProduct(e.target.value)}
+          className="w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white"
+        >
+          <option value="">Selecciona un producto...</option>
+          {products.filter(p => p.ingredients && p.ingredients.length > 0).map(prod => (
+            <option key={prod.id} value={prod.id}>
+              {prod.name} - ${prod.price?.toLocaleString("es-CL")}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedProductData && (
+        <div className="glass-card p-4 space-y-4">
+          <h3 className="font-bold text-white text-lg">{selectedProductData.name}</h3>
+          
+          {/* Ingredients Breakdown */}
+          <div className="space-y-2">
+            <h4 className="text-sm font-bold text-white/70">Ingredientes:</h4>
+            {selectedProductData.ingredients?.map((ing, idx) => {
+              const ingData = ingredients.find(i => i.baseId === ing.ingredient_id || i.id === ing.ingredient_id);
+              const ingCost = (ingData?.cost_per_unit || 0) * ing.quantity;
+              return (
+                <div key={idx} className="flex justify-between items-center bg-black/20 rounded-lg px-3 py-2">
+                  <span className="text-white text-sm">{ingData?.name || "Ingrediente"}</span>
+                  <div className="text-right">
+                    <span className="text-white/60 text-xs">{ing.quantity} {ing.unit}</span>
+                    <span className="text-cosmo-green ml-2 font-bold">${ingCost.toLocaleString("es-CL")}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Cost Summary */}
+          <div className="border-t border-white/10 pt-4 space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-white font-bold">Costo de Producción:</span>
+              <span className="text-2xl font-black text-wanda-pink">${recipeCost.toLocaleString("es-CL")}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-white/60 text-sm">Precio de Venta:</span>
+              <span className="text-white font-bold">${selectedProductData.price?.toLocaleString("es-CL") || 0}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-white/60 text-sm">Margen de Ganancia:</span>
+              <span className={`font-bold ${profitMargin > 30 ? 'text-cosmo-green' : profitMargin > 0 ? 'text-yellow-400' : 'text-red-400'}`}>
+                {profitMargin.toFixed(1)}%
+              </span>
+            </div>
+          </div>
+
+          {profitMargin < 20 && (
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+              <p className="text-yellow-400 text-sm">
+                ⚠️ Margen bajo. Considera aumentar el precio de venta.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {products.filter(p => p.ingredients && p.ingredients.length > 0).length === 0 && (
+        <div className="glass-card p-8 text-center">
+          <FlaskConical className="w-12 h-12 mx-auto text-white/20 mb-4" />
+          <p className="text-white/60">No hay productos con recetas definidas.</p>
+          <p className="text-white/40 text-sm">Crea productos con ingredientes en "Productos Directos"</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ProductManager() {
   const { user, loading: authLoading } = useAuth();
@@ -32,7 +154,9 @@ export function ProductManager() {
     getIngredientPrice,
   } = useUserData();
 
-  const [activeSection, setActiveSection] = useState<"products" | "ingredients" | "precios">("products");
+  // New navigation: supplies (ingredientes + productos_directos) and recetas
+  const [activeSection, setActiveSection] = useState<"suministros" | "recetas">("suministros");
+  const [activeSubsection, setActiveSubsection] = useState<"ingredientes" | "productos_directos">("ingredientes");
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -247,23 +371,43 @@ export function ProductManager() {
           <h2 className="text-2xl font-bold tracking-tight text-white">
             Administración <span className="gradient-text-pink">Integral</span>
           </h2>
-          <p className="text-sm text-white/40 mt-1">Gestiona tus productos, ingredientes y precios</p>
+          <p className="text-sm text-white/40 mt-1">Gestiona tus ingredientes, productos y recetas</p>
         </div>
       </div>
 
+      {/* Main Tabs */}
       <div className="flex gap-2 p-1 bg-black/40 rounded-xl w-fit">
-        <button onClick={() => setActiveSection("products")} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${activeSection === "products" ? "bg-wanda-pink text-white" : "text-white/60 hover:text-white"}`}>
-          <ShoppingBag className="w-4 h-4" /> Productos
+        <button onClick={() => setActiveSection("suministros")} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${activeSection === "suministros" ? "bg-wanda-pink text-white" : "text-white/60 hover:text-white"}`}>
+          <Package className="w-4 h-4" /> Suministros
         </button>
-        <button onClick={() => setActiveSection("ingredients")} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${activeSection === "ingredients" ? "bg-wanda-pink text-white" : "text-white/60 hover:text-white"}`}>
-          <Package className="w-4 h-4" /> Ingredientes
-        </button>
-        <button onClick={() => setActiveSection("precios")} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${activeSection === "precios" ? "bg-wanda-pink text-white" : "text-white/60 hover:text-white"}`}>
-          <DollarSign className="w-4 h-4" /> Precios Base
+        <button onClick={() => setActiveSection("recetas")} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold ${activeSection === "recetas" ? "bg-wanda-pink text-white" : "text-white/60 hover:text-white"}`}>
+          <FlaskConical className="w-4 h-4" /> Recetas
         </button>
       </div>
 
-      {activeSection === "precios" && (
+      {/* Sub-tabs for Suministros */}
+      {activeSection === "suministros" && (
+        <div className="flex gap-2 p-1 bg-black/30 rounded-xl w-fit">
+          <button onClick={() => setActiveSubsection("ingredientes")} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold ${activeSubsection === "ingredientes" ? "bg-cosmo-green text-black" : "text-white/60 hover:text-white"}`}>
+            Ingredientes
+          </button>
+          <button onClick={() => setActiveSubsection("productos_directos")} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold ${activeSubsection === "productos_directos" ? "bg-cosmo-green text-black" : "text-white/60 hover:text-white"}`}>
+            Productos Directos
+          </button>
+        </div>
+      )}
+
+      {/* Recetas Section - New automatic cost calculation */}
+      {activeSection === "recetas" && (
+        <RecetasSection 
+          ingredients={allIngredients}
+          products={productUser}
+          onUpdateProduct={updateProductUser}
+        />
+      )}
+
+      {/* Suministros Sections */}
+      {activeSection === "suministros" && activeSubsection === "ingredientes" && (
         <div className="space-y-4">
           <p className="text-white/60 text-sm">Personaliza los precios de los ingredientes base para tu negocio</p>
           <div className="grid gap-3">
@@ -295,7 +439,7 @@ export function ProductManager() {
         </div>
       )}
 
-      {activeSection === "ingredients" && (
+      {activeSection === "suministros" && activeSubsection === "ingredientes" && (
         <div className="space-y-4">
           <div className="flex justify-end">
             <button onClick={() => setShowAddForm(true)} className="flex items-center gap-2 px-4 py-2 bg-wanda-pink text-white font-bold rounded-xl hover:bg-wanda-pink-light">
@@ -350,7 +494,7 @@ export function ProductManager() {
         </div>
       )}
 
-      {activeSection === "products" && (
+      {activeSection === "suministros" && activeSubsection === "productos_directos" && (
         <div className="space-y-4">
           <div className="flex justify-end">
             <button onClick={() => setShowProductForm(true)} className="flex items-center gap-2 px-4 py-2 bg-wanda-pink text-white font-bold rounded-xl hover:bg-wanda-pink-light">
@@ -474,25 +618,5 @@ export function ProductManager() {
         </div>
       )}
     </div>
-  );
-}
-
-function DollarSign(props: any) {
-  return (
-    <svg 
-      {...props} 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <line x1="12" y1="2" x2="12" y2="22" />
-      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
   );
 }
