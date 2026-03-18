@@ -23,13 +23,12 @@ import {
 
 const TABS = [
   { id: "dashboard", label: "Dashboard", shortLabel: "Dash", icon: BarChart3 },
-  { id: "logistica", label: "Logística", shortLabel: "Rut", icon: CarFront },
   { id: "evento", label: "Evento", shortLabel: "Evt", icon: CalendarCheck },
-  { id: "productos", label: "Productos", shortLabel: "Prod", icon: Calculator },
-  { id: "resultados", label: "Resultados", shortLabel: "Res", icon: ListChecks },
-  { id: "lista", label: "Lista", shortLabel: "Com", icon: ShoppingCart },
-  { id: "costos", label: "Finanzas", shortLabel: "Fin", icon: DollarSign },
+  { id: "logistica", label: "Logística", shortLabel: "Log", icon: CarFront },
   { id: "recetas", label: "Recetas", shortLabel: "Rec", icon: Settings2 },
+  { id: "resultados", label: "Resultados", shortLabel: "Res", icon: ListChecks },
+  { id: "lista", label: "Lista", shortLabel: "Lista", icon: ShoppingCart },
+  { id: "costos", label: "Finanzas", shortLabel: "Fin", icon: DollarSign },
   { id: "productos_admin", label: "Admin Prod.", shortLabel: "Adm", icon: Package },
   { id: "admin", label: "Admin", shortLabel: "Sys", icon: Shield },
 ];
